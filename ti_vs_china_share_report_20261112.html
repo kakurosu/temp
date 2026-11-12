@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TIの中国シェア検証</title>
+<style>
+:root{--fg:#1a1a1a;--mut:#555;--bd:#c8c8c8;--hd:#eef2f6;--ti:#1f4e79;--ti2:#6f93b8;--cn:#c55a11;--c21:#a6a6a6;--bg:#fff;--note:#f7f7f2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Yu Gothic UI","Hiragino Sans","Noto Sans JP",Meiryo,sans-serif;font-size:15px;line-height:1.7}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:1.5rem;margin:0 0 4px}
+h2{font-size:1.2rem;border-bottom:2px solid var(--ti);padding-bottom:4px;margin-top:40px}
+h3{font-size:1.02rem;margin:22px 0 6px}
+.meta{color:var(--mut);font-size:.88rem}
+.tw{overflow-x:auto;margin:10px 0 6px;border:1px solid var(--bd)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:.84rem}
+table.narrow{min-width:520px}
+caption{text-align:left;font-weight:bold;padding:6px 8px;background:var(--hd)}
+th,td{border:1px solid var(--bd);padding:5px 7px;vertical-align:top;text-align:left}
+th{background:var(--hd);font-weight:600;white-space:nowrap}
+td.n{text-align:right;white-space:nowrap}
+.bd{display:inline-block;font-size:.72rem;padding:0 5px;border-radius:3px;border:1px solid #888;margin:1px 2px 1px 0;white-space:nowrap}
+.b1{border-color:#1f4e79;color:#1f4e79}.b2{border-color:#7a5c00;color:#7a5c00}
+.bf{border-color:#2e7d32;color:#2e7d32}.bi{border-color:#b00020;color:#b00020;font-weight:bold}
+.bc{border-color:#555;color:#555}.bk{border-color:#888;color:#666}.bn{border-color:#6a1b9a;color:#6a1b9a;font-weight:bold}
+.bu{border-color:#b00020;color:#b00020;border-style:dashed}
+.box{background:var(--note);border:1px solid var(--bd);padding:10px 14px;margin:10px 0}
+.box ol,.box ul{margin:4px 0;padding-left:1.4em}
+.prem{font-size:.85rem;color:#333;background:#fafafa;border-left:3px solid #b00020;padding:6px 10px;margin:4px 0 14px}
+.prem ul{margin:2px 0;padding-left:1.3em}
+.chart{width:100%;max-width:680px;height:auto;display:block;margin:8px 0}
+.chart .grid{stroke:#ddd;stroke-width:1}.chart .ax{font-size:11px;fill:#444}.chart .vl{font-size:10.5px;fill:#222}
+.chart .ti{fill:var(--ti)}.chart .ti2{fill:var(--ti2)}.chart .cn{fill:var(--cn)}.chart .c21{fill:var(--c21)}
+code{font-size:.85em;background:#f1f1f1;padding:0 3px}
+.src li{margin-bottom:4px;word-break:break-all;font-size:.84rem}
+a{color:#1f4e79}
+@media print{body{font-size:11px}main{max-width:none;padding:0}.tw{overflow:visible;border:none}table{min-width:0;font-size:9.5px}h2{page-break-after:avoid}tr{page-break-inside:avoid}a{color:#000;text-decoration:none}}
+</style></head><body><main>
+<h1>TIは中国のアナログ半導体市場で中国メーカーにシェアを奪われるか</h1>
+<p class="meta">作成 2026-11-12（データは2026-11-12までに公表された資料）。読者: 個人投資家。売買の推奨はしていません。<br>
+表示の約束: <span class="bd b1">一次</span>企業自身の開示（10-K・年報・IR記録） <span class="bd b2">二次</span>調査会社・証券・メディア <span class="bd bf">事実</span>資料に書かれている数値・発言 <span class="bd bc">計算</span>資料の数値から機械的に計算 <span class="bd bi">推論</span>前提を置いた見立て（前提は表の直下） <span class="bd bk">既知</span>先の調査で原文照合済み <span class="bd bn">新規</span>今回の追加調査で判明 <span class="bd bu">未照合</span>先の調査の要約による（今回原文を再確認できず）。<br>元データCSV: <code>D:\開発用フォルダ\data\projects\0058_analog-ic-datasheet-compare\ti_vs_china\share_report\</code></p>
+<h2 id="s0">0. 結論</h2>
+<div class="box"><ol>
+<li><span class="bd bf">事実</span> TIは中国のアナログ市場で今も首位です。Frost &amp; Sullivan の推計では2025年に214億元・シェア9.8%（2024年は165億元・8.4%）。TIの中国向け売上（顧客の本社所在地が中国、ドル建て）は2025年37.81億ドル（全社の21%）、2026年1〜9月は36.39億ドル（前年同期比+28.6%）で、直近の数字にシェア低下は表れていません。ただし8.4%と9.8%は別の目論見書に載った別版の推計で、そのまま比べられるとは限りません。</li>
+<li><span class="bd bc">計算</span> 期間を長く取ると伸びの差がはっきりします。2021→25年の年平均成長率（CAGR）は、TIの中国向け売上が−4.7%（ドル建て）、中国12社の売上合計が+10.6%（ドル建て）・+13.7%（元建て）。2025年には12社合計（36.52億ドル）がTIの中国向け売上（37.81億ドル）とほぼ同じ規模になりました。12社の売上にはアナログ以外や中国外への販売も含みます。</li>
+<li><span class="bd bf">事実</span> 国産品への置き換え（国産化率）は用途で大きく違います。Frostの2024年推計で民生40〜50%、通信20〜25%、産業10〜15%、車載約5%。2026年の中国各社の増収は民生ではなく、産業・ネットワーク/計算・車載が中心です（圣邦〈SG Micro〉の2026年1〜9月: 工業・エネルギー+90%、ネットワーク・計算+110%、車載+80%超、民生+3%）。</li>
+<li><span class="bd bf">事実</span><span class="bd bi">推論</span> 製品の仕様では、汎用オペアンプ・LDO・降圧DC-DC・デジタルアイソレータ・CAN/LINはすでに置き換えられる水準です。多相電源・車載BMS・SerDesは発表済みでも多くが評価段階、高速ADCとクロックはほぼ未参入です。</li>
+<li><span class="bd bi">推論</span> 試算（中位シナリオ）では、市場が伸びないと仮定すると、5年でTIの中国アナログ売上の15.9〜18.2%（4.7〜5.4億ドル、TI全社の2025年売上の2.67〜3.07%）が国産品に移ります。Frostの用途別市場成長率を入れると、TIの中国アナログ売上は29.8億ドルから5年後に40.8〜44.1億ドル（年率6.5〜8.2%）に増える計算です。</li>
+<li><span class="bd bi">推論</span> 民生向けに限ると、中位で1.7〜3.0億ドル（TI全社売上の0.97〜1.70%）、高位でも2.9〜5.0億ドル（同1.62〜2.83%）です。TIの中国売上の用途構成は開示されていないため、幅が出ます。</li>
+</ol></div>
+<p class="meta">数値の多くは「推論」の前提に強く依存します。前提は第6節の表の直下にまとめています。</p>
+<h2 id="s1">1. 比較表A: TIの中国シェアと中国売上 — 複数ソースの横並び</h2>
+<div class="tw"><table class="">
+<thead><tr><th>出典</th><th>区分</th><th>対象年</th><th>定義</th><th>TIの値</th><th>シェア・順位</th><th>市場規模</th><th>出典ページ</th></tr></thead><tbody>
+<tr><td>Frost &amp; Sullivan（圣邦H株目論見書 2026-06-17）</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td>2025年</td><td>中国アナログ市場の売上（元建て）。社名は匿名、Company A＝1930年設立・テキサス本社・Nasdaq上場→TIと判断</td><td><b>214億元</b></td><td><b>9.8%・1位</b>（2位B〈ADIと推定〉7.5%、上位8社計37.3%）</td><td>2,184億元</td><td><a href="#S1">[S1]</a> PDF103頁（印字95）</td></tr>
+<tr><td>同上（電源IC）</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td>2025年</td><td>電源管理IC市場</td><td>124億元</td><td>8.9%・1位</td><td>1,390億元</td><td><a href="#S1">[S1]</a> PDF104頁</td></tr>
+<tr><td>同上（信号チェーン）</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td>2025年</td><td>信号チェーンIC市場</td><td>90億元</td><td>11.3%・2位（1位B 155億元・19.5%）</td><td>793億元</td><td><a href="#S1">[S1]</a> PDF104頁</td></tr>
+<tr><td>Frost &amp; Sullivan（纳芯微〈NOVOSENSE〉H株目論見書 2025-11-28）</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td>2024年</td><td>中国アナログ市場（元建て）</td><td><b>165億元</b></td><td><b>8.4%・1位</b>（ADI 6.2%、Infineon 5.3%）。海外勢計76.8%・国内勢23.2%</td><td>1,953億元</td><td><a href="#S2">[S2]</a> p.117, p.130</td></tr>
+<tr><td>同上（車載アナログ）</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td>2024年</td><td>中国車載アナログ市場</td><td>74億元</td><td>20.0%・1位</td><td>371億元</td><td><a href="#S2">[S2]</a> p.139〜142</td></tr>
+<tr><td>同上（デジタルアイソレータ等の絶縁）</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td>2024年</td><td>中国デジタル絶縁市場</td><td>16億元</td><td>23.1%・1位（2位 纳芯微15.6%）</td><td>71億元</td><td><a href="#S2">[S2]</a> p.139〜142</td></tr>
+<tr><td>観研天下（中国の調査会社、2026-05-01）</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td>2024年</td><td>定義・一次出典の記載なし</td><td>—</td><td>9%（国内勢計34%）</td><td>—</td><td><a href="#S25">[S25]</a></td></tr>
+<tr><td>TI 10-K（FY2025）</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td>2024年／2025年</td><td>顧客の本社所在地が中国の売上（ドル建て、全製品）</td><td>30.12億ドル／<b>37.81億ドル</b></td><td>全社売上の21%（2025年）</td><td>—</td><td><a href="#S3">[S3]</a> 33頁</td></tr>
+<tr><td>TI 10-K（FY2025）</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td>2025年</td><td>中国へ出荷した製品の売上（出荷先ベース）</td><td>全社の約50%（約88億ドル＝176.82億ドル×50%、<span class="bd bc">計算</span>）</td><td>—</td><td>—</td><td><a href="#S3">[S3]</a></td></tr>
+<tr><td>TI 10-Q（2026年第3四半期）</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td>2026年1〜9月</td><td>本社所在地ベース</td><td>36.39億ドル（前年同期28.30億ドル、+28.6%）</td><td>—</td><td>—</td><td><a href="#S5">[S5]</a> 7頁</td></tr>
+<tr><td>突き合わせ（本レポート）</td><td><span class="bd bi">推論</span></td><td>2025年</td><td>Frostの元建て推計をドル換算し、10-KのTI中国向け売上にアナログ比率を掛けたものと比較</td><td>214億元÷7.1874＝29.8億ドル／37.81億ドル×79%＝29.9億ドル</td><td>両者はほぼ一致</td><td>—</td><td><a href="#S1">[S1]</a> <a href="#S3">[S3]</a></td></tr>
+<tr><td>TIアナログ売上÷WSTS世界アナログ市場</td><td><span class="bd bc">計算</span><span class="bd bk">既知</span></td><td>2020→2024→2025年</td><td>世界市場でのTIのシェア（ドル建て）</td><td>—</td><td>19.6%→15.3%→16.2%</td><td>—</td><td><a href="#S3">[S3]</a> <a href="#S26">[S26]</a></td></tr>
+</tbody></table></div>
+<div class="prem"><b>読み方の注意</b><ul>
+<li>Frostの2024年値（8.4%）と2025年値（9.8%）は別の目論見書の別版推計です。2024年の市場規模（1,953億元）は両方の版で一致しますが、TIの2024年売上を新版で改訂したかは書かれていません。そのため「TIが2025年にシェアを1.4ポイント上げた」とは断定しません。</li>
+<li>国内勢のシェアはFrost（2024年23.2%）と観研天下（2024年34%）で11ポイント違います。観研天下は一次出典と定義を示していません。</li>
+<li>TIの「中国向け売上」は、本社所在地ベース（2025年37.81億ドル）と出荷先ベース（約88億ドル）で2倍以上違います。中国の工場で組み立てて海外へ輸出する欧米・日本企業向けは出荷先ベースに含まれます。国産品との競争にさらされる範囲は、本社所在地ベースより広い可能性があります（推論）。</li>
+</ul></div>
+<h3>図1 TIの中国向け売上（本社所在地ベース）</h3><svg viewBox="0 0 640 300" role="img" aria-label="TIの中国売上推移" class="chart">
+<line x1="50" y1="250.0" x2="630" y2="250.0" class="grid"/>
+<text x="44" y="254.0" class="ax" text-anchor="end">0</text>
+<line x1="50" y1="206.0" x2="630" y2="206.0" class="grid"/>
+<text x="44" y="210.0" class="ax" text-anchor="end">10</text>
+<line x1="50" y1="162.0" x2="630" y2="162.0" class="grid"/>
+<text x="44" y="166.0" class="ax" text-anchor="end">20</text>
+<line x1="50" y1="118.0" x2="630" y2="118.0" class="grid"/>
+<text x="44" y="122.0" class="ax" text-anchor="end">30</text>
+<line x1="50" y1="74.0" x2="630" y2="74.0" class="grid"/>
+<text x="44" y="78.0" class="ax" text-anchor="end">40</text>
+<line x1="50" y1="30.0" x2="630" y2="30.0" class="grid"/>
+<text x="44" y="34.0" class="ax" text-anchor="end">50</text>
+<rect x="50.0" y="103.7" width="56" height="146.3" class="ti"/>
+<text x="78.0" y="98.7" class="vl" text-anchor="middle">33.26</text>
+<text x="78.0" y="266.0" class="ax" text-anchor="middle">2020</text>
+<rect x="135.7" y="48.2" width="56" height="201.8" class="ti"/>
+<text x="163.7" y="43.2" class="vl" text-anchor="middle">45.86</text>
+<text x="163.7" y="266.0" class="ax" text-anchor="middle">2021</text>
+<rect x="221.3" y="38.5" width="56" height="211.5" class="ti"/>
+<text x="249.3" y="33.5" class="vl" text-anchor="middle">48.07</text>
+<text x="249.3" y="266.0" class="ax" text-anchor="middle">2022</text>
+<rect x="307.0" y="105.1" width="56" height="144.9" class="ti"/>
+<text x="335.0" y="100.1" class="vl" text-anchor="middle">32.93</text>
+<text x="335.0" y="266.0" class="ax" text-anchor="middle">2023</text>
+<rect x="392.7" y="117.5" width="56" height="132.5" class="ti"/>
+<text x="420.7" y="112.5" class="vl" text-anchor="middle">30.12</text>
+<text x="420.7" y="266.0" class="ax" text-anchor="middle">2024</text>
+<rect x="478.3" y="83.6" width="56" height="166.4" class="ti"/>
+<text x="506.3" y="78.6" class="vl" text-anchor="middle">37.81</text>
+<text x="506.3" y="266.0" class="ax" text-anchor="middle">2025</text>
+<rect x="564.0" y="89.9" width="56" height="160.1" class="ti2"/>
+<text x="592.0" y="84.9" class="vl" text-anchor="middle">36.39</text>
+<text x="592.0" y="266.0" class="ax" text-anchor="middle">2026</text>
+<text x="592.0" y="280.0" class="ax" text-anchor="middle">1〜9月</text>
+<text x="50" y="18" class="ax">億ドル（顧客の本社所在地が中国の売上。TI 10-K/10-Q）</text>
+</svg>
+<h2 id="s2">2. 比較表B: 成長率（年平均成長率 CAGR を含む） — TIと中国各社</h2>
+<p>CAGR＝(終値÷始値)^(1/年数)−1。ドル換算は年平均レート 2021年6.4491元/ドル、2025年7.1874元/ドル。計算は <code>scripts/ti_vs_china_share_calc.py</code>、結果は <code>cagr_ti_market.csv</code>・<code>cagr_china12.csv</code>。</p>
+<div class="tw"><table class="">
+<thead><tr><th>系列</th><th>単位</th><th>期間</th><th>値</th><th>CAGR</th><th>2026年の前年同期比</th><th>区分</th><th>出典</th></tr></thead><tbody>
+<tr><td>TI 中国売上（本社所在地ベース）</td><td>億ドル</td><td>2020→2025</td><td>33.26→37.81</td><td><b>+2.6%</b>（年率）</td><td>—</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>TI 10-K 各年（事実）／CAGRは計算</td></tr>
+<tr><td>TI 中国売上（本社所在地ベース）</td><td>億ドル</td><td>2021→2025</td><td>45.86→37.81</td><td><b>-4.7%</b>（年率）</td><td>—</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>TI 10-K 各年（事実）／CAGRは計算</td></tr>
+<tr><td>TI 中国売上（本社所在地ベース）</td><td>億ドル</td><td>2023→2025</td><td>32.93→37.81</td><td><b>+7.2%</b>（年率）</td><td>—</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>TI 10-K 各年（事実）／CAGRは計算</td></tr>
+<tr><td>TI 中国アナログ売上（Frost推計、Company A）</td><td>億元</td><td>2024→2025</td><td>165→214</td><td><b>+29.7%</b>（1年の伸び）</td><td>—</td><td><span class="bd b2">二次</span><span class="bd bc">計算</span></td><td>Frost（纳芯微H株目論見書2024年値・圣邦H株目論見書2025年値）。版が異なる点に注意</td></tr>
+<tr><td>中国アナログ市場（Frost）</td><td>億元</td><td>2021→2025</td><td>1570→2184</td><td><b>+8.6%</b>（年率）</td><td>—</td><td><span class="bd b2">二次</span><span class="bd bc">計算</span></td><td>圣邦H株目論見書 印字89頁の図（本文は2021年1,580億元と記載）</td></tr>
+<tr><td>中国アナログ市場（Frost予測）</td><td>億元</td><td>2025→2030</td><td>2184→3894</td><td><b>+12.3%</b>（年率）</td><td>—</td><td><span class="bd b2">二次</span><span class="bd bc">計算</span></td><td>同上。目論見書記載の2026-30年CAGRは12.2%</td></tr>
+<tr><td>TI 中国売上（本社所在地ベース）</td><td>億ドル</td><td>2026年1〜9月</td><td>28.30→36.39</td><td>—</td><td><b>+28.6%</b></td><td><span class="bd b1">一次</span><span class="bd bf">事実</span></td><td>TI 10-Q <a href="#S5">[S5]</a></td></tr>
+<tr><td>TI アナログ売上（全世界）</td><td>億ドル</td><td>2026年1〜9月</td><td>103.91→132.00</td><td>—</td><td>+27.0%（四半期 +22/+26/+32%）</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span></td><td><a href="#S5">[S5]</a></td></tr>
+<tr><td>圣邦（SG Micro）</td><td>億元</td><td>2021→2025</td><td>22.384→38.981</td><td>元 +14.9%／ドル +11.8%</td><td>+53.7%（43.043億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>上海贝岭（Belling）</td><td>億元</td><td>2021→2025</td><td>20.243→31.737</td><td>元 +11.9%／ドル +8.9%</td><td>+15.4%（25.545億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>必易微（Kiwi Instruments）</td><td>億元</td><td>2021→2025</td><td>8.87→6.835</td><td>元 -6.3%／ドル -8.8%</td><td>+63.8%（7.558億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>纳芯微（NOVOSENSE）</td><td>億元</td><td>2021→2025</td><td>8.621→33.678</td><td>元 +40.6%／ドル +36.8%</td><td>+78.7%（42.263億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>杰华特（Joulwatt）</td><td>億元</td><td>2021→2025</td><td>10.416→26.55</td><td>元 +26.4%／ドル +23.0%</td><td>+51.4%（29.415億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>希荻微（Halo Micro）</td><td>億元</td><td>2021→2025</td><td>4.629→9.394</td><td>元 +19.4%／ドル +16.2%</td><td>+10.9%（7.95億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>晶丰明源（Bright Power）</td><td>億元</td><td>2021→2025</td><td>23.023→15.698</td><td>元 -9.1%／ドル -11.6%</td><td>+120.0%（24.578億元）（2026年は買収した四川易冲を3月から連結、7.15億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>帝奥微（Dioo）</td><td>億元</td><td>2021→2025</td><td>5.077→5.62</td><td>元 +2.6%／ドル -0.2%</td><td>-20.6%（3.628億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>南芯（Southchip）</td><td>億元</td><td>2021→2025</td><td>9.842→32.605</td><td>元 +34.9%／ドル +31.3%</td><td>+3.2%（24.563億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>芯朋微（Chipown）</td><td>億元</td><td>2021→2025</td><td>7.532→11.427</td><td>元 +11.0%／ドル +8.0%</td><td>+14.7%（10.062億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>思瑞浦（3PEAK）</td><td>億元</td><td>2021→2025</td><td>13.259→21.421</td><td>元 +12.7%／ドル +9.7%</td><td>+75.9%（26.921億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>艾为（Awinic）</td><td>億元</td><td>2021→2025</td><td>23.27→28.535</td><td>元 +5.2%／ドル +2.4%</td><td>-2.8%（21.165億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td><b>12社合計</b></td><td>億元</td><td>2021→2025</td><td>157.166→262.481</td><td>元 +13.7%／ドル +10.6%</td><td>+40.1%（266.69億元）</td><td><span class="bd b1">一次</span><span class="bd bc">計算</span></td><td>cninfo 年報・三季報 <a href="#S18">[S18]</a></td></tr>
+<tr><td>矽力杰（Silergy、台湾6415）</td><td>億台湾ドル</td><td>—</td><td>—</td><td>—</td><td>1〜3Q +35.0%（181.22億）、3Q単独 +52.4%（72.59億）</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bn">新規</span></td><td>2026年3Q 法人説明会資料 <a href="#S16">[S16]</a></td></tr>
+<tr><td>中国アナログ市場（Frost、元建て）</td><td>億元</td><td>2026→2030予測</td><td>—</td><td>+12.2%（目論見書記載）</td><td>—</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span></td><td><a href="#S1">[S1]</a> PDF97頁</td></tr>
+</tbody></table></div>
+<div class="prem"><b>注</b><ul>
+<li>TIの2021→25年が−4.7%になるのは、2021〜22年の在庫積み増し期の高い売上が起点だからです。2020→25年では+2.6%、2023→25年では+7.2%です。起点の選び方で符号が変わります。</li>
+<li>中国12社合計の2026年1〜9月の伸び+40.1%には晶丰明源（Bright Power）の買収効果が含まれます。買収分を除くと約+36%（先の調査の計算）。</li>
+<li>12社はアナログ専業ではありません（晶丰明源はMCU、艾为〈Awinic〉は高周波部品、上海贝岭〈Shanghai Belling〉は電力量計用ICなどを含む）。12社の売上を中国アナログ市場でのシェアと読み替えないでください。</li>
+</ul></div>
+<h3>参考: 粗利率 <span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></h3>
+<div class="tw"><table class="narrow">
+<thead><tr><th>会社</th><th>起点</th><th>中間</th><th>直近</th></tr></thead><tbody>
+<tr><td>TI（全社）</td><td>68.8%（2022）</td><td>57.0%（2025）</td><td>61.4%（2026年1〜9月）</td></tr>
+<tr><td>圣邦（SG Micro）</td><td>59.0%（2022）</td><td>—</td><td>51.8%（2026年1〜9月）</td></tr>
+<tr><td>思瑞浦（3PEAK）</td><td>58.6%（2022）</td><td>—</td><td>50.3%（2026年1〜9月）</td></tr>
+<tr><td>纳芯微（NOVOSENSE）</td><td>50.0%（2022）</td><td>—</td><td>31.4%（2026年1〜9月）</td></tr>
+<tr><td>杰华特（Joulwatt）</td><td>39.9%（2022）</td><td>—</td><td>26.2%（2026年1〜9月）</td></tr>
+<tr><td>南芯（Southchip）</td><td>43.0%（2022）</td><td>—</td><td>35.5%（2026年1〜9月）</td></tr>
+<tr><td>矽力杰（Silergy）</td><td>—</td><td>—</td><td>47.4%（2026年3Q）</td></tr>
+</tbody></table></div>
+<p class='meta'>中国各社の粗利率は2022年から8〜19ポイント下がり、TIは2025年を底に上がっています。中国勢が価格で売上を取っている形と整合します（推論）。</p>
+<h3>図2 中国12社の売上（2021年と2025年、億元）</h3><svg viewBox="0 0 640 382" role="img" aria-label="中国12社の売上 2021年と2025年" class="chart">
+<line x1="190.0" y1="34" x2="190.0" y2="358" class="grid"/>
+<text x="190.0" y="374" class="ax" text-anchor="middle">0</text>
+<line x1="276.7" y1="34" x2="276.7" y2="358" class="grid"/>
+<text x="276.7" y="374" class="ax" text-anchor="middle">10</text>
+<line x1="363.3" y1="34" x2="363.3" y2="358" class="grid"/>
+<text x="363.3" y="374" class="ax" text-anchor="middle">20</text>
+<line x1="450.0" y1="34" x2="450.0" y2="358" class="grid"/>
+<text x="450.0" y="374" class="ax" text-anchor="middle">30</text>
+<line x1="536.7" y1="34" x2="536.7" y2="358" class="grid"/>
+<text x="536.7" y="374" class="ax" text-anchor="middle">40</text>
+<text x="184" y="54" class="ax" text-anchor="end">圣邦（SG Micro）</text>
+<rect x="190" y="41" width="194.0" height="9" class="c21"/>
+<rect x="190" y="51" width="337.8" height="11" class="cn"/>
+<text x="531.8" y="59" class="vl">22.4→39.0</text>
+<text x="184" y="80" class="ax" text-anchor="end">纳芯微（NOVOSENSE）</text>
+<rect x="190" y="67" width="74.7" height="9" class="c21"/>
+<rect x="190" y="77" width="291.9" height="11" class="cn"/>
+<text x="485.9" y="85" class="vl">8.6→33.7</text>
+<text x="184" y="106" class="ax" text-anchor="end">南芯（Southchip）</text>
+<rect x="190" y="93" width="85.3" height="9" class="c21"/>
+<rect x="190" y="103" width="282.6" height="11" class="cn"/>
+<text x="476.6" y="111" class="vl">9.8→32.6</text>
+<text x="184" y="132" class="ax" text-anchor="end">上海贝岭（Belling）</text>
+<rect x="190" y="119" width="175.4" height="9" class="c21"/>
+<rect x="190" y="129" width="275.1" height="11" class="cn"/>
+<text x="469.1" y="137" class="vl">20.2→31.7</text>
+<text x="184" y="158" class="ax" text-anchor="end">艾为（Awinic）</text>
+<rect x="190" y="145" width="201.7" height="9" class="c21"/>
+<rect x="190" y="155" width="247.3" height="11" class="cn"/>
+<text x="441.3" y="163" class="vl">23.3→28.5</text>
+<text x="184" y="184" class="ax" text-anchor="end">杰华特（Joulwatt）</text>
+<rect x="190" y="171" width="90.3" height="9" class="c21"/>
+<rect x="190" y="181" width="230.1" height="11" class="cn"/>
+<text x="424.1" y="189" class="vl">10.4→26.6</text>
+<text x="184" y="210" class="ax" text-anchor="end">思瑞浦（3PEAK）</text>
+<rect x="190" y="197" width="114.9" height="9" class="c21"/>
+<rect x="190" y="207" width="185.6" height="11" class="cn"/>
+<text x="379.6" y="215" class="vl">13.3→21.4</text>
+<text x="184" y="236" class="ax" text-anchor="end">晶丰明源（Bright Power）</text>
+<rect x="190" y="223" width="199.5" height="9" class="c21"/>
+<rect x="190" y="233" width="136.0" height="11" class="cn"/>
+<text x="393.5" y="241" class="vl">23.0→15.7</text>
+<text x="184" y="262" class="ax" text-anchor="end">芯朋微（Chipown）</text>
+<rect x="190" y="249" width="65.3" height="9" class="c21"/>
+<rect x="190" y="259" width="99.0" height="11" class="cn"/>
+<text x="293.0" y="267" class="vl">7.5→11.4</text>
+<text x="184" y="288" class="ax" text-anchor="end">希荻微（Halo Micro）</text>
+<rect x="190" y="275" width="40.1" height="9" class="c21"/>
+<rect x="190" y="285" width="81.4" height="11" class="cn"/>
+<text x="275.4" y="293" class="vl">4.6→9.4</text>
+<text x="184" y="314" class="ax" text-anchor="end">必易微（Kiwi Instruments）</text>
+<rect x="190" y="301" width="76.9" height="9" class="c21"/>
+<rect x="190" y="311" width="59.2" height="11" class="cn"/>
+<text x="270.9" y="319" class="vl">8.9→6.8</text>
+<text x="184" y="340" class="ax" text-anchor="end">帝奥微（Dioo）</text>
+<rect x="190" y="327" width="44.0" height="9" class="c21"/>
+<rect x="190" y="337" width="48.7" height="11" class="cn"/>
+<text x="242.7" y="345" class="vl">5.1→5.6</text>
+<rect x="190" y="10" width="12" height="9" class="c21"/><text x="206" y="18" class="ax">2021年</text>
+<rect x="270" y="10" width="12" height="9" class="cn"/><text x="286" y="18" class="ax">2025年</text>
+<text x="360" y="18" class="ax">単位: 億元（各社年報、連結売上）</text>
+</svg>
+<h2 id="s3">3. 比較表C: 製品の差 — カテゴリ別の置換可否とデータシート比較</h2>
+<p>データシート比較は同プロジェクトの <code>outputs/ti_vs_china_comparison.xlsx</code>（2026-11-12、列位置監査済み）から要点を抜きました。価格はLCSC店頭の1,000個時単価（米ドル、2026-11-05取得）。中国メーカーの対照検索: 思瑞浦 https://www.3peak.com/cross-reference-search 、圣邦 https://www.sg-micro.com/cn/cross-reference 、纳芯微 https://www.novosns.com/cross-reference-search 。</p>
+<div class="tw"><table class="">
+<thead><tr><th>カテゴリ</th><th>仕様上の置換可否</th><th>中国側の品番・状態</th><th>データシート比較の要点</th><th>流通価格（LCSC）</th><th>区分</th><th>出典</th></tr></thead><tbody>
+<tr><td>汎用オペアンプ（レール・ツー・レール）</td><td>置換可能</td><td>圣邦 SGM8632、思瑞浦 TP1562A など。車載品あり</td><td>TLV9062（TI）と比べ、思瑞浦TP1562Aは25℃のオフセット保証が良い（最大0.4mV対1.6mV）が全温度保証なし。圣邦SGM8632は保証値が弱い（最大3.5mV、開ループ利得 最小79dB対TIの104dB）</td><td>LM358: TI 0.040ドル／XBLW 0.028ドル（互換品）</td><td><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S24">[S24]</a> <a href="#S23">[S23]</a></td></tr>
+<tr><td>ゼロドリフト・オペアンプ</td><td>置換可能</td><td>思瑞浦 TP5551、圣邦 SGM8551</td><td>オフセットは思瑞浦が最良（最大5µV、全温度10µV）。消費電流はTI OPA333が最大25µAで、中国品（最大1,110〜1,400µA）の約50分の1</td><td>OPA333: TI 0.744ドル／圣邦SGM8551 1.064ドル／Gainsil GS8551 0.230ドル</td><td><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S24">[S24]</a> <a href="#S23">[S23]</a></td></tr>
+<tr><td>電流センスアンプ</td><td>置換可能（車載品あり）</td><td>纳芯微 NSCSA213A-Q1・NSCSA240-Q1、思瑞浦 TP181</td><td>INA213（TI）の消費電流 最大100µAに対し纳芯微は320µA。性能保証はおおむね同等</td><td>—</td><td><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S24">[S24]</a></td></tr>
+<tr><td>LDO・降圧DC-DC</td><td>置換可能（車載LDOあり）</td><td>思瑞浦 TPL9052・TPL8031Q、圣邦 SGM2036・SGM61230、矽力杰 SY8113B、杰华特 JW5361</td><td>入力電圧範囲は TI TLV755P 1.45〜5.5V に対し中国品 1.6〜1.75V から。降圧は中国品の方が上限電圧が高い品番あり（SGM61230 28V対TPS563201 17V）</td><td>LDO1117: TI 0.136ドル／XBLW 0.028ドル。TL431: TI 0.047ドル／中国品0.022〜0.028ドル</td><td><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S24">[S24]</a> <a href="#S23">[S23]</a></td></tr>
+<tr><td>デジタルアイソレータ・絶縁ゲートドライバ</td><td>置換可能（車載品量産）</td><td>纳芯微 NSi8241W-Q1・NSi6602、川土微（Chipanalog）CA-IS3741</td><td>絶縁耐圧 5,000Vrms は同等。同相ノイズ耐性（CMTI）最小値は纳芯微200kV/µsでTI ISO7741（85kV/µs）を上回る。川土微は75kV/µs</td><td>デジタルアイソレータ平均価格 3.2〜4.2元（2021）→1.2〜2.2元（2024）（Frost）</td><td><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S24">[S24]</a> <a href="#S2">[S2]</a> p.134</td></tr>
+<tr><td>ローサイドゲートドライバ</td><td>置換可能</td><td>UMW・JSMSEMI の互換品</td><td>—</td><td>UCC27517: TI 0.250ドル／UMW 0.108ドル</td><td><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S23">[S23]</a></td></tr>
+<tr><td>CAN/CAN FD・LIN トランシーバ</td><td>置換可能（車載品量産）</td><td>思瑞浦 TPT1042Q、纳芯微 NCA1042、川土微 CA-IF1042-Q1</td><td>主要定格は同等</td><td>—</td><td><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S24">[S24]</a></td></tr>
+<tr><td>多相コントローラ・DrMOS（CPU/GPU電源）</td><td>一部量産</td><td>杰华特: 90A DrMOSを大手顧客で量産（2025年報）、12相量産・16相はサンプル。晶丰明源: 2025年に規模量産</td><td>晶丰明源は同市場を「英飞凌、MPS、AOS等」がほぼ独占と記載。同社のこの品目の売上は2025年0.96億元で全社の6.1%</td><td>—</td><td><span class="bd bf">事実</span><span class="bd bn">新規</span></td><td><a href="#S13">[S13]</a> <a href="#S15">[S15]</a></td></tr>
+<tr><td>車載BMS AFE・SerDes</td><td>発表済み・多くは評価段階</td><td>杰华特・纳芯微・思瑞浦が開発中や送样</td><td>—</td><td>—</td><td><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S15">[S15]</a></td></tr>
+<tr><td>C2000型のリアルタイム制御MCU</td><td>発表済み・評価段階</td><td>—</td><td>—</td><td>—</td><td><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td>先の調査（w3）</td></tr>
+<tr><td>高速ADC・クロック</td><td>ほぼ未参入</td><td>—</td><td>圣邦目論見書のFrost記述: ADC/DACは要求水準が極めて高い</td><td>—</td><td><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S1">[S1]</a> PDF98頁</td></tr>
+<tr><td>品番数</td><td>—</td><td>TI 8万超、圣邦7,200超（2023年以降約3,400投入）、纳芯微4,200（車載800超）、杰华特4,200（在売3,700超）、思瑞浦3,200</td><td>品揃えの差はなお大きい</td><td>—</td><td><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S3">[S3]</a> <a href="#S15">[S15]</a></td></tr>
+</tbody></table></div>
+<div class="prem"><b>まとめ（推論）</b><ul>
+<li>保証値だけを見ると、思瑞浦・纳芯微はTIと同等以上の品番が多い。TIが優るのは全温度範囲での保証の厚さ、低消費電力、電源電圧範囲・ESD・絶縁定格の幅、資料の質と品揃えです。圣邦の汎用品と川土微は保証が薄めです。</li>
+<li>店頭価格では、型番を合わせた互換品（UMW・XBLWなど）はTIの約3〜7割です。一方、圣邦SGM8551はTI OPA333より高く、「中国品は常に安い」わけではありません。LCSCは小口流通の価格で、大口の契約価格は分かりません。</li>
+<li>信頼性（不良率ppm）はどの中国メーカーも開示していません。品質差を数値で比べることはできません。</li>
+</ul></div>
+<h2 id="s4">4. 比較表D: 各社は互いをどう言っているか</h2>
+<p>引用は原文の短い抜粋です（中国語の引用は原文のまま）。「未照合」は今回の作業で原文ファイルに該当箇所を見つけられなかったもので、先の調査の要約に依拠しています。</p>
+<div class="tw"><table class="">
+<thead><tr><th>発言主体</th><th>立場</th><th>発言内容（要旨・短い引用）</th><th>汎用品の価格についての見方</th><th>日付・文書</th><th>区分</th><th>出典</th></tr></thead><tbody>
+<tr><td>圣邦（SG Micro）</td><td>中国勢</td><td>成熟プロセスの逼迫と値上げが、工業分野で国産方案の評価を加速させていると記載。引用「成熟制程芯片产能紧张、价格上涨」</td><td>値上げ計画なし（2026-04-01）、「全面涨价计划」なし（2026-08-31）。理由は「模拟芯片单价低、数量大、供应商相对较多」で価格は製品寿命の中で下がるため</td><td>2026年半期報告（2026-08-29）、IR記録 2026-04-01・08-31</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bn">新規</span></td><td><a href="#S8">[S8]</a> <a href="#S7">[S7]</a></td></tr>
+<tr><td>思瑞浦（3PEAK）</td><td>中国勢</td><td>2026年上期の増収は主に数量増。光モジュール・車載が伸びを牽引（3Q）</td><td>上期の製品価格は「总体保持平稳」。代工の値上げは今後見極め</td><td>IR記録 2026-08-25、2026-11-09</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bn">新規</span></td><td><a href="#S12">[S12]</a></td></tr>
+<tr><td>纳芯微（NOVOSENSE）</td><td>中国勢</td><td>以前の粗利率低下は「行业竞争加剧、主要产品平均售价下行」による</td><td>値上げ通知（涨价函）を出し大手顧客と交渉中（2026-04-29）</td><td>IR記録 2026-04-29・05-14</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bn">新規</span></td><td><a href="#S10">[S10]</a></td></tr>
+<tr><td>晶丰明源（Bright Power）</td><td>中国勢</td><td>CPU/GPU向け電源市場は「英飞凌、MPS、AOS等」がほぼ独占、国産は少数と記載</td><td>記載なし</td><td>2025年報（2026-04-18）PDF15頁</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bn">新規</span></td><td><a href="#S13">[S13]</a></td></tr>
+<tr><td>南芯（Southchip）</td><td>中国勢</td><td>売上の87.10%が民生。需要承圧・競争激化、車載・算力・工業はまだ小さいとリスクに記載</td><td>記載なし</td><td>2026年半期報告 PDF32〜33頁</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bn">新規</span></td><td><a href="#S11">[S11]</a></td></tr>
+<tr><td>中国各社（年報・目論見書）</td><td>中国勢</td><td>海外大手との差（品質管理・信頼性・品番数）を自認。勝ち筋は価格・全国産供給網・専用設計。ppm開示なし</td><td>—</td><td>各社2025年報・H株目論見書</td><td><span class="bd b1">一次</span><span class="bd bk">既知</span></td><td>先の調査（w1〜w3）</td></tr>
+<tr><td>Frost &amp; Sullivan（纳芯微目論見書）</td><td>調査会社</td><td>国産化は民生で進み、産業・車載・通信は遅れ</td><td>海外メーカーの同等品は通常約20%高い</td><td>2025-11-28</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S2">[S2]</a> 印字135頁</td></tr>
+<tr><td>Frost &amp; Sullivan（圣邦目論見書）</td><td>調査会社</td><td>民生では国内勢が追いついたが、産業・車載・ネットワーク/計算ではなお遅れ。サーバー用電源は大電流・高速応答・長期安定が必要</td><td>—</td><td>2026-06-17</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bn">新規</span></td><td><a href="#S1">[S1]</a> PDF98頁</td></tr>
+<tr><td>反ダンピング申請書（江蘇省半導体行業協会、公開版）</td><td>中国業界団体</td><td>米国製の対象品（汎用インターフェース・ゲートドライバ）で米国勢の数量シェア35.4%→45.0%（2022→24）。申請人主張のダンピングマージン加重平均340.10%</td><td>米国勢の平均輸入価格 3.36元→1.62元/個（−51.77%）。同期間に国内同種品の販売価格指数も100→87→73に低下</td><td>申請書 公開版（印字20頁・29〜30頁）</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bk">既知</span><span class="bd bn">新規</span></td><td><a href="#S22">[S22]</a></td></tr>
+<tr><td>ADI</td><td>欧米同業</td><td>中国では最も単価の低い領域では競争を控え、高性能BMSや機能安全電源などに注力（CFO、2026年のカンファレンス報道）。中国の乗用車向けでシェア上昇と説明</td><td>低単価帯で戦わない</td><td>Morgan Stanley会議の報道記事、決算説明会</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bn">新規</span></td><td><a href="#S20">[S20]</a></td></tr>
+<tr><td>ADI</td><td>欧米同業</td><td>中国勢への置き換えは事実上ゼロ。中国売上比率25.9%（FY25）</td><td>—</td><td>先の調査の要約</td><td><span class="bd bu">未照合</span></td><td>先の調査（w5）</td></tr>
+<tr><td>onsemi</td><td>欧米同業</td><td>過去5年で非中核の約9億ドルの売上から撤退（2026年も約3億ドル撤退予定）</td><td>低収益品から撤退</td><td>Investor Day資料、2026年1Q説明会</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S21">[S21]</a></td></tr>
+<tr><td>Microchip</td><td>欧米同業</td><td>現地勢との競合は売上の4〜5%（2025-08）</td><td>—</td><td>先の調査の要約</td><td><span class="bd bu">未照合</span></td><td>先の調査（w5）</td></tr>
+<tr><td>Infineon</td><td>欧州同業</td><td>シリコンIGBTでは現地勢が追いついた（2026-05）</td><td>—</td><td>先の調査の要約</td><td><span class="bd bu">未照合</span></td><td>先の調査（w6）</td></tr>
+<tr><td>Infineon</td><td>欧州同業</td><td>前年度の中国車載売上は世界の車載売上の2倍の速さで伸びた。供給が逼迫する現地の車載半導体市場で品質面の優位を固めたと説明</td><td>—</td><td>2026-11-10 決算説明会 冒頭説明</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bn">新規</span></td><td><a href="#S19">[S19]</a></td></tr>
+<tr><td>NXP</td><td>欧州同業</td><td>車載のローエンドで中国勢が出てくると予想</td><td>—</td><td>先の調査の要約</td><td><span class="bd bu">未照合</span></td><td>先の調査（w6）</td></tr>
+<tr><td>ST・ルネサス</td><td>欧州・日本同業</td><td>中国勢についての具体的言及なし</td><td>—</td><td>先の調査</td><td><span class="bd bk">既知</span></td><td>先の調査（w6）</td></tr>
+<tr><td>欧米・日本8社全体</td><td>同業</td><td>TIを名指しした経営陣発言はゼロ</td><td>2026年は各社とも値下げ見込みから横ばい〜値上げへ</td><td>先の調査</td><td><span class="bd bk">既知</span></td><td>先の調査（w5・w6）</td></tr>
+<tr><td>TI</td><td>当事者</td><td>10-K: 競合には「emerging companies, particularly in Asia」を含む。中国の国内産業育成で競争できなくなる可能性をリスクに記載。個社名は出さない</td><td>—</td><td>FY2025 10-K</td><td><span class="bd b1">一次</span><span class="bd bf">事実</span><span class="bd bk">既知</span></td><td><a href="#S3">[S3]</a></td></tr>
+<tr><td>TI</td><td>当事者</td><td>「We gained share in Analog in 2025」と述べ、伸びしろはまだ大きいと説明（CEO、2026年1Q説明会）</td><td>2025年は1桁前半の値下げ、2026年1Qは前年比・前期比とも横ばい、下期は値上がりの可能性</td><td>2026-04-21 説明会（第三者の書き起こし）</td><td><span class="bd b2">二次</span><span class="bd bf">事実</span><span class="bd bn">新規</span></td><td><a href="#S6">[S6]</a></td></tr>
+<tr><td>TI</td><td>当事者</td><td>シェアは「過去ピーク未満」（2026年1Q）。競合の納期長期化は「opportunity for TI」（2Q）</td><td>—</td><td>先の調査の要約</td><td><span class="bd bu">未照合</span></td><td>先の調査（w10）。1Qの書き起こしでは「過去ピーク未満」の表現を確認できず</td></tr>
+</tbody></table></div>
+<div class="prem"><b>読み取り（推論）</b><ul>
+<li>中国勢は価格で売上を取ってきたことを自ら認めつつ、2026年は値上げに転じた会社（纳芯微）と据え置く会社（圣邦・思瑞浦）に分かれています。供給逼迫の局面では、国産品の評価が進む（圣邦）とする見方と、海外大手が品質と供給で優位を固めた（Infineon）とする見方が並んでいます。</li>
+<li>反ダンピング申請書は、2022〜24年に米国勢が値下げで数量シェアを35.4%から45.0%へ上げたと主張しています。対象品目（汎用インターフェース・ゲートドライバ）は中国市場の約1.3%（推論、年約25.8億元）に限られますが、汎用品で米国勢が値下げにより数量を取り返した例です。</li>
+</ul></div>
+<h2 id="s5">5. 用途別の現状: 民生・産業・車載・データセンター（通信含む）</h2>
+<p>市場規模は Frost（圣邦目論見書）の中国アナログ市場の用途別内訳。左から 2025年の規模（構成比）／2021→25年CAGR／2026→30年CAGR予測。<span class="bd bn">新規</span> 用途別の数値は図からの読み取りで、4用途の合計は2,184億元に一致します（S1 PDF97〜98頁）。</p>
+<div class="tw"><table class="">
+<thead><tr><th>用途</th><th>中国市場（Frost）2025年規模／過去CAGR／予測CAGR</th><th>国産化率（Frost 2024年）</th><th>TIの位置</th><th>中国各社の用途別構成と伸び（一次資料）</th><th>見立て</th><th>出典</th></tr></thead><tbody>
+<tr><td>民生（スマートフォン・PC・家電など）</td><td>562億元（25.7%）／+0.9%／+5.5%</td><td>40〜50%（家電は65%とする二次情報あり）</td><td>TI全社の21%（2025年）。中国分は非開示</td><td>圣邦: 2026年1〜9月 30%（+3%）。南芯: 2025年 89.26%、2026年上期 87.10%。矽力杰: 39%（2021）→35%（2026年1〜3Q）。艾为: 用途に手機・AIoTを多く挙げる（比率は非開示）</td><td>国産化が最も進んだ領域。中国勢自身の民生売上はほぼ横ばいで、追加の置き換えは鈍っている（推論）</td><td><a href="#S1">[S1]</a> <a href="#S2">[S2]</a> <a href="#S7">[S7]</a> <a href="#S11">[S11]</a> <a href="#S16">[S16]</a></td></tr>
+<tr><td>産業・エネルギー（工場自動化・太陽光・蓄電・電源）</td><td>516億元（23.6%）／+4.6%／+8.4%</td><td>10〜15%</td><td>TI全社の33%</td><td>圣邦: 工業・エネルギー36%（+90%、2026年1〜9月）。纳芯微: 泛能源（太陽光・蓄電・デジタル電源等）52.92%（2025）→57.96%（2026年上期）。矽力杰: 33%→35%。艾为: 泛工業+40%（2026年上期）。南芯: 工業4.24%（2025、+129.90%）</td><td>2026年の中国勢の増収の中心。国産化率が低いため、比率の上昇余地が最も大きい（推論）</td><td><a href="#S1">[S1]</a> <a href="#S2">[S2]</a> <a href="#S7">[S7]</a> <a href="#S9">[S9]</a> <a href="#S14">[S14]</a> <a href="#S16">[S16]</a> <a href="#S11">[S11]</a></td></tr>
+<tr><td>車載</td><td>471億元（21.6%）／+25.2%／+16.9%</td><td>約5%（2029年20%の予測）</td><td>TI全社の33%。中国車載アナログでTIは20.0%・1位（2024年）</td><td>纳芯微: 35.22%（2025）→32.38%（2026年上期）。圣邦: 約7%（2024）→7.5%（2026年1〜9月、+80%超）。思瑞浦: 2025年 3億元超（全社の約14%、計算）。矽力杰: 1%（2021）→14%（2026年1〜3Q）。南芯: 6.31%（2025、+140.55%）。艾为: +91%（2026年上期）</td><td>金額は小さいが伸び率は最も高い。認定に年単位を要し、置き換えは段階的（推論）</td><td><a href="#S2">[S2]</a> <a href="#S7">[S7]</a> <a href="#S9">[S9]</a> <a href="#S12">[S12]</a> <a href="#S16">[S16]</a> <a href="#S11">[S11]</a> <a href="#S14">[S14]</a></td></tr>
+<tr><td>データセンター・通信（サーバー・光モジュール・基地局）</td><td>635億元（29.1%）／+12.0%／+15.8%</td><td>通信20〜25%（データセンター単独は不明）</td><td>TI全社でデータセンター9%・通信3%（2025年）。2026年3Qのデータセンター売上は前年比約+95%（説明会）</td><td>圣邦: ネットワーク・計算26%（+110%）。思瑞浦: 光モジュール向けが伸びを牽引。矽力杰: Computer 17%（2021）→9%、Communication 9%→6%。晶丰明源: CPU/GPU電源 0.96億元（2025、+122.26%）、0.46億元（2026年上期、+33.44%）。杰华特: 90A DrMOSを量産（金額非開示）。纳芯微: AIサーバー向けデジタル電源が急増（金額非開示）</td><td>多相電源の国産品は量産初期で金額はまだ小さい。光モジュール向けの信号チェーンは中国勢が伸ばしている（推論）</td><td><a href="#S1">[S1]</a> <a href="#S2">[S2]</a> <a href="#S7">[S7]</a> <a href="#S12">[S12]</a> <a href="#S13">[S13]</a> <a href="#S15">[S15]</a> <a href="#S16">[S16]</a> <a href="#S10">[S10]</a></td></tr>
+</tbody></table></div>
+<div class="prem"><b>注</b><ul>
+<li><b>TIの中国売上の用途別内訳は非開示</b>です。10-Kは本社所在地別・出荷先別の合計だけを示します（今回FY2025 10-Kで再確認）。</li>
+<li>中国市場の用途構成は資料で大きく違います。Frost（2025年）は通信・計算29.1%・民生25.7%・産業23.6%・車載21.6%。中商産業研究院（希荻微〈Halo Micro〉2025年報摘要が引用、対象年の記載なし）は民生36.97%・泛能源25.96%・車載19.00%です。先の調査で観研天下（2024年）として記録した「民生37%・産業26%・車載19%」と同じ数値で、どちらが元の出典かは確認できていません。</li>
+<li>杰华特・艾为は用途別の比率を数値で開示していません（今回確認した年報・半期報告・問詢函回答の範囲）。</li>
+</ul></div>
+<h2 id="s6">6. 「汎用品・民生向けでどれだけ取られうるか」のシナリオ試算 <span class="bd bi">推論</span></h2>
+<p>計算式（用途 u ごと）:<br>
+<code>TIの基準売上_u ＝ 29.77億ドル × 構成比_u</code>（29.77＝Frost 214億元÷7.1874）<br>
+<code>残存率_u ＝ (1 − 5年後の国産化率_u) ÷ (1 − 現在の国産化率_u)</code><br>
+<code>市場成長なしの喪失額_u ＝ 基準売上_u × (1 − 残存率_u)</code><br>
+<code>5年後のTI中国売上_u ＝ 基準売上_u × (1 + Frost予測CAGR_u)^5 × 残存率_u</code><br>
+計算は <code>scripts/ti_vs_china_share_calc.py</code>、結果は <code>scenario_by_use.csv</code>・<code>scenario_summary.csv</code>。</p>
+<div class="tw"><table class="">
+<caption>前提1: 用途別の国産化率と市場成長率</caption>
+<thead><tr><th>用途</th><th>国産化率 現在</th><th>5年後 低</th><th>5年後 中</th><th>5年後 高</th><th>市場CAGR（Frost 2026-30）</th><th>根拠</th></tr></thead><tbody>
+<tr><td>民生</td><td>45%</td><td>50%</td><td>60%</td><td>70%</td><td>5.5%</td><td>現在値はFrost 2024年の40〜50%の中央。5年後はFrostに予測なし、置いた前提</td></tr>
+<tr><td>産業</td><td>12.5%</td><td>15%</td><td>20%</td><td>30%</td><td>8.4%</td><td>現在値はFrostの10〜15%の中央。5年後は置いた前提</td></tr>
+<tr><td>車載</td><td>5%</td><td>12%</td><td>20%</td><td>30%</td><td>16.9%</td><td>中位20%はFrostの2029年予測。低・高は置いた前提</td></tr>
+<tr><td>データセンター・通信</td><td>22.5%</td><td>25%</td><td>35%</td><td>45%</td><td>15.8%</td><td>現在値はFrost（通信）20〜25%の中央。5年後は置いた前提</td></tr>
+</tbody></table></div>
+<div class="tw"><table class="">
+<caption>前提2: TIの中国アナログ売上の用途構成（非開示のため3通り）</caption>
+<thead><tr><th>構成</th><th>民生</th><th>産業</th><th>車載</th><th>データセンター・通信</th><th>根拠</th></tr></thead><tbody>
+<tr><td>(a) TI全社の構成</td><td>21%</td><td>33%</td><td>33%</td><td>12%（DC9%＋通信3%）</td><td>TI 2025年 10-K/説明会。合計99%を100%に正規化。ユーザーの「民生は約20%」に相当</td></tr>
+<tr><td>(b1) 中国市場の構成（Frost 2025年）</td><td>25.7%</td><td>23.6%</td><td>21.6%</td><td>29.1%</td><td>圣邦目論見書の用途別市場規模（今回新規）</td></tr>
+<tr><td>(b2) 中国市場の構成（中商産業研究院）</td><td>37.0%</td><td>26.0%</td><td>19.0%</td><td>18.1%（残り）</td><td>希荻微2025年報摘要が引用（対象年の記載なし）。先の調査の「民生37%・産業26%・車載19%」と同じ数値</td></tr>
+</tbody></table></div>
+<div class="tw"><table class="">
+<caption>結果1: 全用途の合計（推論）</caption>
+<thead><tr><th>構成</th><th>シナリオ</th><th>基準（億ドル）</th><th>市場成長なしの喪失（億ドル）</th><th>TI中国アナログ比</th><th>TI全社2025年売上比</th><th>5年後: 国産化なし（億ドル）</th><th>5年後: 国産化あり（億ドル）</th><th>5年後までの年率</th><th>国産化による差（億ドル）</th></tr></thead><tbody>
+<tr><td>a_TI全社構成</td><td>低</td><td>29.77</td><td><b>1.71</b></td><td>5.7%</td><td>0.96%</td><td>52.29</td><td><b>49.28</b></td><td>10.6%</td><td>3.01</td></tr>
+<tr><td>a_TI全社構成</td><td>中</td><td>29.77</td><td><b>4.72</b></td><td>15.9%</td><td>2.67%</td><td>52.29</td><td><b>44.13</b></td><td>8.2%</td><td>8.16</td></tr>
+<tr><td>a_TI全社構成</td><td>高</td><td>29.77</td><td><b>8.52</b></td><td>28.6%</td><td>4.82%</td><td>52.29</td><td><b>37.68</b></td><td>4.8%</td><td>14.61</td></tr>
+<tr><td>b1_中国市場構成_Frost2025</td><td>低</td><td>29.77</td><td><b>1.65</b></td><td>5.5%</td><td>0.93%</td><td>52.59</td><td><b>49.76</b></td><td>10.8%</td><td>2.83</td></tr>
+<tr><td>b1_中国市場構成_Frost2025</td><td>中</td><td>29.77</td><td><b>5.1</b></td><td>17.1%</td><td>2.89%</td><td>52.59</td><td><b>43.83</b></td><td>8.0%</td><td>8.75</td></tr>
+<tr><td>b1_中国市場構成_Frost2025</td><td>高</td><td>29.77</td><td><b>9.09</b></td><td>30.5%</td><td>5.14%</td><td>52.59</td><td><b>37.01</b></td><td>4.4%</td><td>15.58</td></tr>
+<tr><td>b2_中国市場構成_中商産業研究院</td><td>低</td><td>29.77</td><td><b>1.81</b></td><td>6.1%</td><td>1.02%</td><td>49.51</td><td><b>46.6</b></td><td>9.4%</td><td>2.91</td></tr>
+<tr><td>b2_中国市場構成_中商産業研究院</td><td>中</td><td>29.77</td><td><b>5.43</b></td><td>18.2%</td><td>3.07%</td><td>49.51</td><td><b>40.84</b></td><td>6.5%</td><td>8.67</td></tr>
+<tr><td>b2_中国市場構成_中商産業研究院</td><td>高</td><td>29.77</td><td><b>9.6</b></td><td>32.2%</td><td>5.43%</td><td>49.51</td><td><b>34.15</b></td><td>2.8%</td><td>15.36</td></tr>
+</tbody></table></div>
+<div class="tw"><table class="">
+<caption>結果2: 民生向けだけ（推論）</caption>
+<thead><tr><th>構成</th><th>シナリオ</th><th>民生の構成比</th><th>基準（億ドル）</th><th>国産化率</th><th>市場成長なしの喪失（億ドル）</th><th>TI中国アナログ比</th><th>TI全社売上比</th><th>5年後のTI民生向け（億ドル）</th></tr></thead><tbody>
+<tr><td>a_TI全社構成</td><td>低</td><td>21.2%</td><td>6.32</td><td>45%→50%</td><td><b>0.57</b></td><td>1.9%</td><td>0.32%</td><td>7.5</td></tr>
+<tr><td>a_TI全社構成</td><td>中</td><td>21.2%</td><td>6.32</td><td>45%→60%</td><td><b>1.72</b></td><td>5.8%</td><td>0.97%</td><td>6.0</td></tr>
+<tr><td>a_TI全社構成</td><td>高</td><td>21.2%</td><td>6.32</td><td>45%→70%</td><td><b>2.87</b></td><td>9.6%</td><td>1.62%</td><td>4.5</td></tr>
+<tr><td>b1_中国市場構成_Frost2025</td><td>低</td><td>25.7%</td><td>7.66</td><td>45%→50%</td><td><b>0.7</b></td><td>2.3%</td><td>0.39%</td><td>9.1</td></tr>
+<tr><td>b1_中国市場構成_Frost2025</td><td>中</td><td>25.7%</td><td>7.66</td><td>45%→60%</td><td><b>2.09</b></td><td>7.0%</td><td>1.18%</td><td>7.28</td></tr>
+<tr><td>b1_中国市場構成_Frost2025</td><td>高</td><td>25.7%</td><td>7.66</td><td>45%→70%</td><td><b>3.48</b></td><td>11.7%</td><td>1.97%</td><td>5.46</td></tr>
+<tr><td>b2_中国市場構成_中商産業研究院</td><td>低</td><td>37.0%</td><td>11.01</td><td>45%→50%</td><td><b>1.0</b></td><td>3.4%</td><td>0.57%</td><td>13.08</td></tr>
+<tr><td>b2_中国市場構成_中商産業研究院</td><td>中</td><td>37.0%</td><td>11.01</td><td>45%→60%</td><td><b>3.0</b></td><td>10.1%</td><td>1.7%</td><td>10.46</td></tr>
+<tr><td>b2_中国市場構成_中商産業研究院</td><td>高</td><td>37.0%</td><td>11.01</td><td>45%→70%</td><td><b>5.0</b></td><td>16.8%</td><td>2.83%</td><td>7.85</td></tr>
+</tbody></table></div>
+<div class="tw"><table class="narrow">
+<caption>結果3: 用途別の内訳（構成b1・中位）（推論）</caption>
+<thead><tr><th>用途</th><th>基準（億ドル）</th><th>喪失・成長なし（億ドル）</th><th>TI全社売上比</th><th>5年後・国産化なし</th><th>5年後・国産化あり</th></tr></thead><tbody>
+<tr><td>民生</td><td>7.66</td><td>2.09</td><td>1.18%</td><td>10.01</td><td>7.28</td></tr>
+<tr><td>産業</td><td>7.03</td><td>0.6</td><td>0.34%</td><td>10.53</td><td>9.63</td></tr>
+<tr><td>車載</td><td>6.42</td><td>1.01</td><td>0.57%</td><td>14.02</td><td>11.8</td></tr>
+<tr><td>データセンター・通信</td><td>8.66</td><td>1.4</td><td>0.79%</td><td>18.03</td><td>15.12</td></tr>
+</tbody></table></div>
+<div class="prem"><b>前提と、前提が崩れる方向</b><ul>
+<li>基準のTI中国アナログ売上29.77億ドルは2025年値。国産化率の「現在」はFrostの2024年値で、1年ずれています。</li>
+<li>検算: 構成b1で加重した現在の国産化率は22.2%（Frost記載の2024年国内勢シェア23.2%）。中位シナリオの5年後は34.7%で、Frostの2029年予測30.8%（4年後）よりやや高く、中位はFrostより国産化を強めに置いています。</li>
+<li><b>比例負担の仮定</b>: 外資が失う分を、TIが外資内のシェアに比例して負担すると置きました。実際には次の2方向にずれます。</li>
+<li>比例より<b>多く</b>失う方向: TIは汎用品（カタログ品）の比率が高く、品番も多いため、国産品と重なる品目の割合がADIなど高性能品中心の会社より大きい。ADIは低単価帯で戦わないと述べています。</li>
+<li>比例より<b>少なく</b>失う方向: TIは自社工場（300mmウエハー）でコストを下げ、値下げで数量を守れます。反ダンピング申請書では、2022〜24年に米国勢が値下げで対象品の数量シェアを35.4%から45.0%に上げたと記載されています。2026年のように供給が逼迫する局面では、供給力のある大手に注文が戻ることもあります（Infineonの説明）。</li>
+<li>価格の変化は入れていません（数量と金額を同じとみなしています）。汎用品で値下げ競争が進めば、国産化率が変わらなくてもTIの売上は減ります。</li>
+<li>本社所在地ベースの中国向け売上だけを対象にしています。出荷先ベース（約88億ドル）のうち、中国の工場で生産する海外企業向けでも国産品の採用が進めば、影響はこの試算より大きくなります。</li>
+</ul></div>
+<h2 id="s7">7. 資料の限界・未確認事項・今後の確認点</h2>
+<div class="tw"><table class="">
+<thead><tr><th>項目</th><th>状態</th><th>内容</th><th>埋める方法（無料／有料）</th></tr></thead><tbody>
+<tr><td>TIの中国売上の用途別内訳</td><td>非開示</td><td>TIは開示していない。シナリオでは3通りの構成で幅を示した</td><td>なし（会社開示の変更待ち）</td></tr>
+<tr><td>Frostの社名の特定</td><td>推定</td><td>目論見書は社名を匿名にしている。設立年・本社所在地からTI・ADIなどと推定</td><td>Frost原報告（有料、費用未確認）</td></tr>
+<tr><td>Frost 2024年値と2025年値の比較可能性</td><td>未確認</td><td>別版の推計。TIの2024年値が改訂されたか不明</td><td>圣邦目論見書に2024年の社別表があるか確認（無料）</td></tr>
+<tr><td>用途別の国産化率の将来値</td><td>前提</td><td>Frostは車載（2029年20%）と全体（2029年30.8%）しか予測していない</td><td>Frost原報告・Omdia/Yole（有料）</td></tr>
+<tr><td>中国勢のデータセンター向け売上（杰华特・纳芯微）</td><td>未取得</td><td>金額を開示していない</td><td>各社の投資家関係活動記録（無料、追跡）</td></tr>
+<tr><td>杰华特・艾为の用途別比率</td><td>未取得</td><td>年報・半期報告に数値なし</td><td>H株目論見書を提出した場合はその業界章（無料）</td></tr>
+<tr><td>不良率（ppm）・品質</td><td>未取得</td><td>中国各社はppmを開示していない</td><td>顧客側のサプライヤー監査情報（入手困難）</td></tr>
+<tr><td>大口の契約価格</td><td>未取得</td><td>LCSCは小口流通の店頭価格</td><td>代理店・購買担当へのヒアリング（有料または非公開）</td></tr>
+<tr><td>反ダンピング調査の現状</td><td>未確認</td><td>米側は2025-11に「終了」と発表。中国商務部の公告は未確認</td><td>中国商務部サイトの公告（無料）</td></tr>
+<tr><td>比較表Dの一部発言（ADI「置換ゼロ」、Microchip 4〜5%、Infineon IGBT、NXP、TIの「過去ピーク未満」「opportunity for TI」）</td><td>未照合</td><td>今回、保存済みの書き起こしファイルで該当箇所を確認できなかった</td><td>各社の説明会書き起こし・IR資料の再取得（無料〜有料）</td></tr>
+<tr><td>観研天下の数値（国内勢34%、TI 9%）</td><td>出典不明</td><td>一次出典・定義の記載なし</td><td>—</td></tr>
+<tr><td>矽力杰の説明会資料のURL</td><td>未記録</td><td>スライド6〜7（画像）で確認。取得元URLは記録されていない</td><td>MOPS（台湾の公開情報観測站）で再取得（無料）</td></tr>
+</tbody></table></div>
+<h3>今後の確認点</h3><ul>
+<li>2027年1月下旬のTI 2026年第4四半期決算と2026年10-K: 中国向け売上（本社所在地ベース・出荷先ベース）と、中国についての記述の変化。</li>
+<li>2027年3〜4月の中国各社の2026年年報: 用途別構成、車載・データセンター向け売上の金額、粗利率。値上げの定着か反落か。</li>
+<li>次版のFrost推計（中国各社のH株目論見書・年報が引用）でのTIのシェアと国内勢の合計シェア。</li>
+<li>LCSC価格パネル（0059）での汎用品の中国品とTI品の価格差の推移。</li>
+</ul>
+<h2 id="s8">8. 出典一覧</h2><ol class="src">
+<li id="S1"><b>[S1]</b> 圣邦（SG Micro）H株目論見書（2026-06-17、Frost &amp; Sullivan 業界章）<br>https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0617/2026061700041.pdf<br>該当箇所: PDF97〜98頁（印字89〜90、用途別市場）、PDF103〜104頁（印字95〜96、社別順位）</li>
+<li id="S2"><b>[S2]</b> 纳芯微（NOVOSENSE）H株目論見書（2025-11-28、Frost &amp; Sullivan 業界章）<br>https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1128/2025112800015.pdf<br>該当箇所: p.117・120・122〜123・130・134・135・139〜142</li>
+<li id="S3"><b>[S3]</b> Texas Instruments FY2025 10-K<br>https://www.sec.gov/Archives/edgar/data/97476/000009747626000059/txn-20251231.htm<br>該当箇所: 33頁（中国向け売上）、事業の概要（競合・リスク要因）</li>
+<li id="S4"><b>[S4]</b> Texas Instruments FY2022 10-K<br>https://www.sec.gov/Archives/edgar/data/97476/000009747623000007/txn-20221231.htm<br>該当箇所: 30頁（2020〜22年の中国向け売上）</li>
+<li id="S5"><b>[S5]</b> Texas Instruments 2026年第3四半期 10-Q<br>https://www.sec.gov/Archives/edgar/data/97476/000009747626000169/txn-20260930.htm<br>該当箇所: 7頁</li>
+<li id="S6"><b>[S6]</b> TI 2026年第1四半期 決算説明会 書き起こし（Motley Fool、第三者）<br>https://www.fool.com/earnings/call-transcripts/2026/04/22/txn-q1-2026-earnings-transcript/<br>該当箇所: 質疑応答（シェア・価格）</li>
+<li id="S7"><b>[S7]</b> 圣邦 投資家関係活動記録 2026-11-02／2026-08-31／2026-04-01<br>http://static.cninfo.com.cn/finalpage/2026-11-03/1225656527.PDF ／ http://static.cninfo.com.cn/finalpage/2026-09-01/1225539993.PDF ／ http://static.cninfo.com.cn/finalpage/2026-04-02/1225073787.PDF<br>該当箇所: 用途別構成・価格方針</li>
+<li id="S8"><b>[S8]</b> 圣邦 2026年半期報告<br>http://static.cninfo.com.cn/finalpage/2026-08-29/1225531990.PDF<br>該当箇所: PDF12頁</li>
+<li id="S9"><b>[S9]</b> 纳芯微 2025年年報／2026年半期報告<br>http://static.cninfo.com.cn/finalpage/2026-03-31/1225059424.PDF ／ http://static.cninfo.com.cn/finalpage/2026-08-28/1225521832.PDF<br>該当箇所: 年報PDF29頁、半期PDF21頁（用途別構成）</li>
+<li id="S10"><b>[S10]</b> 纳芯微 投資家関係活動記録 2026-04-29／2026-05-14<br>https://pdf.dfcfw.com/pdf/H2_AN202604291821744466_1.pdf ／ https://pdf.dfcfw.com/pdf/H2_AN202605141822314963_1.pdf<br>該当箇所: 価格・粗利率・AI電源</li>
+<li id="S11"><b>[S11]</b> 南芯（Southchip）2025年年報／2026年半期報告<br>http://static.cninfo.com.cn/finalpage/2026-04-30/1225265339.PDF ／ http://static.cninfo.com.cn/finalpage/2026-08-18/1225478670.PDF<br>該当箇所: 年報PDF22頁、半期PDF32〜33頁</li>
+<li id="S12"><b>[S12]</b> 思瑞浦（3PEAK）2025年年報／投資家関係活動記録 2026-08-25・2026-11-09<br>http://static.cninfo.com.cn/finalpage/2026-03-31/1225060234.PDF ／ https://pdf.dfcfw.com/pdf/H2_AN202608251828402271_1.pdf ／ https://pdf.dfcfw.com/pdf/H2_AN202611091831557417_1.pdf<br>該当箇所: 年報PDF30頁（車載3億元超）</li>
+<li id="S13"><b>[S13]</b> 晶丰明源（Bright Power）2025年年報／2026年半期報告<br>http://static.cninfo.com.cn/finalpage/2026-04-18/1225121857.PDF ／ http://static.cninfo.com.cn/finalpage/2026-08-25/1225499102.PDF<br>該当箇所: 年報PDF15〜17頁、半期PDF14〜15頁</li>
+<li id="S14"><b>[S14]</b> 艾为（Awinic）2026年半期報告<br>http://static.cninfo.com.cn/finalpage/2026-08-20/1225483419.PDF<br>該当箇所: PDF15頁</li>
+<li id="S15"><b>[S15]</b> 杰华特（Joulwatt）2025年年報／年報問詢函への回答（2026-06-13）<br>http://static.cninfo.com.cn/finalpage/2026-03-31/1225064247.PDF ／ http://static.cninfo.com.cn/finalpage/2026-06-13/1225367456.PDF<br>該当箇所: 年報PDF20頁（90A DrMOS）</li>
+<li id="S16"><b>[S16]</b> 矽力杰（Silergy）2026年第3四半期 法人説明会資料（2026-11-13付）／2025年年報<br>台湾 公開情報観測站（MOPS）の法人説明会欄。取得URLは未記録<br>該当箇所: スライド3・4・6・7、年報PDF5頁</li>
+<li id="S17"><b>[S17]</b> 希荻微（Halo Micro）2025年年報摘要（中商産業研究院の用途別構成を引用）<br>http://static.cninfo.com.cn/finalpage/2026-04-17/1225113720.PDF<br>該当箇所: PDF7頁</li>
+<li id="S18"><b>[S18]</b> 中国12社の年報（2021・2022・2025）・2026年三季報（cninfo）<br>URL一覧は先の調査の w8\dl\urls2.txt（例: 圣邦2025年報 http://static.cninfo.com.cn/finalpage/2026-03-28/1225045011.PDF）<br>該当箇所: 各社の営業収入</li>
+<li id="S19"><b>[S19]</b> Infineon 2026年9月期第4四半期 決算説明会 冒頭説明（2026-11-10）<br>同社IRサイト掲載PDF（ファイル名 2026-11-10-q4-fy26-intro-statement-analyst-call-v01-00-en.pdf）<br>該当箇所: 中国車載に関する段落</li>
+<li id="S20"><b>[S20]</b> ADI CFO の Morgan Stanley 会議での発言を伝える記事（Yahoo Finance掲載）／ADI 決算説明会書き起こし<br>取得URLは未記録（先の調査 w5 の保存ファイル）<br>該当箇所: 中国の競争環境の段落</li>
+<li id="S21"><b>[S21]</b> onsemi Investor Day 資料・2026年1Q説明会<br>onsemi 公式サイト（先の調査 w5 の保存ファイル）<br>該当箇所: 非中核撤退</li>
+<li id="S22"><b>[S22]</b> 相关模拟芯片反倾销调查申请书（江蘇省半導体行業協会、公開版）<br>先の調査 w11 で取得（取得URLは未記録）<br>該当箇所: 印字20頁・29〜30頁</li>
+<li id="S23"><b>[S23]</b> LCSC 店頭価格パネル（2026-11-05取得）<br>D:\開発用フォルダ\data\shared\lcsc_analog_prices\20261105<br>該当箇所: 1,000個時単価</li>
+<li id="S24"><b>[S24]</b> TI vs 中国品 データシート比較（同プロジェクト）<br>D:\開発用フォルダ\0058_analog-ic-datasheet-compare\outputs\ti_vs_china_comparison.xlsx<br>該当箇所: 「一覧」シート</li>
+<li id="S25"><b>[S25]</b> 観研天下（中国の調査会社）2026-05-01 記事<br>先の調査で参照（URLは未記録）<br>該当箇所: —</li>
+<li id="S26"><b>[S26]</b> WSTS 半導体市場統計（アナログ）<br>先の調査 w7・w10 の保存ファイル<br>該当箇所: 各年のアナログ市場規模</li>
+</ol>
+<p class='meta'>本レポートは公開資料の整理と試算であり、特定銘柄の売買を勧めるものではありません。</p>
+</main></body></html>

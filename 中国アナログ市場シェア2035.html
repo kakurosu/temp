@@ -1,0 +1,428 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>中国アナログ市場シェア2035</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f5f6;
+  --surface:#ffffff;
+  --ink:#1c2227;
+  --ink-soft:#4b555e;
+  --rule:#cfd5da;
+  --rule-soft:#e4e8eb;
+  --ti:#1d5f9a;
+  --ti-b:#5b8fbd;
+  --ti-c:#a9c6e0;
+  --cn:#b3382f;
+  --cn-b:#d98a82;
+  --base:#7d868e;
+  --fact-bg:#eaf1f7;
+  --fact-ink:#17476f;
+  --est-bg:#f8efe0;
+  --est-ink:#7a4d00;
+  --hl:#fdf3c8;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14181c;
+    --surface:#1b2026;
+    --ink:#e6e9ec;
+    --ink-soft:#a7b0b8;
+    --rule:#3a434b;
+    --rule-soft:#2a3138;
+    --ti:#6fb1e8;
+    --ti-b:#4a86b8;
+    --ti-c:#2f5575;
+    --cn:#f08a80;
+    --cn-b:#a85a53;
+    --base:#8b949c;
+    --fact-bg:#1c2c3a;
+    --fact-ink:#a9d1f2;
+    --est-bg:#352b17;
+    --est-ink:#f0c778;
+    --hl:#3a3414;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14181c;
+  --surface:#1b2026;
+  --ink:#e6e9ec;
+  --ink-soft:#a7b0b8;
+  --rule:#3a434b;
+  --rule-soft:#2a3138;
+  --ti:#6fb1e8;
+  --ti-b:#4a86b8;
+  --ti-c:#2f5575;
+  --cn:#f08a80;
+  --cn-b:#a85a53;
+  --base:#8b949c;
+  --fact-bg:#1c2c3a;
+  --fact-ink:#a9d1f2;
+  --est-bg:#352b17;
+  --est-ink:#f0c778;
+  --hl:#3a3414;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  font-size:16px;
+  line-height:1.8;
+}
+.wrap{
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-block:40px 64px;
+}
+main{max-width:44rem;margin:0 auto}
+.num,td.n,th.n{font-family:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;font-variant-numeric:tabular-nums}
+h1{font-size:1.65rem;line-height:1.4;margin:0 0 6px;font-weight:700}
+.meta{color:var(--ink-soft);font-size:.85rem;margin:0 0 28px}
+h2{
+  font-size:1.2rem;margin:48px 0 12px;padding-top:14px;
+  border-top:2px solid var(--ink);font-weight:700;line-height:1.5;
+}
+h3{font-size:1rem;margin:24px 0 6px;font-weight:700}
+p{margin:0 0 12px}
+.lead{
+  background:var(--surface);
+  border-left:4px solid var(--ti);
+  padding:14px 16px;margin:0 0 8px;
+}
+.lead p:last-child{margin-bottom:0}
+.tag{
+  display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;
+  padding:1px 8px;margin-right:6px;vertical-align:1px;
+}
+.tag.fact{background:var(--fact-bg);color:var(--fact-ink);border:1px solid var(--fact-ink)}
+.tag.est{background:var(--est-bg);color:var(--est-ink);border:1px dashed var(--est-ink)}
+.box{overflow-x:auto;margin:8px 0 6px;border:1px solid var(--rule);background:var(--surface);-webkit-overflow-scrolling:touch}
+.box.est{border:1px dashed var(--est-ink)}
+.box.fact{border-top:3px solid var(--fact-ink)}
+.box.est{border-top:3px dashed var(--est-ink)}
+table{border-collapse:collapse;width:100%;font-size:.85rem;line-height:1.55}
+th,td{padding:7px 10px;border-bottom:1px solid var(--rule-soft);text-align:left;vertical-align:top}
+th{font-weight:700;background:var(--rule-soft);white-space:nowrap}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tr.sub td{color:var(--ink-soft)}
+tr.hl td{background:var(--hl)}
+.cap{font-size:.8rem;color:var(--ink-soft);margin:4px 0 14px;line-height:1.6}
+.ti{color:var(--ti);font-weight:700}
+.cn{color:var(--cn);font-weight:700}
+ul,ol{margin:0 0 12px;padding-left:1.4em}
+li{margin-bottom:4px}
+code{font-family:"IBM Plex Mono",Consolas,monospace;font-size:.82rem;word-break:break-all}
+svg{display:block;min-width:520px;width:100%;height:auto}
+svg text{fill:var(--ink);font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif}
+svg .mono{font-family:"IBM Plex Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+svg .soft{fill:var(--ink-soft)}
+svg .grid{stroke:var(--rule-soft);stroke-width:1}
+svg .axis{stroke:var(--ink-soft);stroke-width:1}
+.b-base{fill:var(--base)}
+.b-ti1{fill:var(--ti-c)}
+.b-ti2{fill:var(--ti-b)}
+.b-ti3{fill:var(--ti)}
+.l-ti{stroke:var(--ti);fill:none;stroke-width:3}
+.l-cn{stroke:var(--cn);fill:none;stroke-width:3}
+.d-ti{fill:var(--ti)}
+.d-cn{fill:var(--cn)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--ink-soft);margin:6px 0 4px}
+.legend i{display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:-1px}
+.lg-base{background:var(--base)}.lg-1{background:var(--ti-c)}.lg-2{background:var(--ti-b)}.lg-3{background:var(--ti)}
+.lg-ti{background:var(--ti)}.lg-cn{background:var(--cn)}
+.note{border-left:3px solid var(--est-ink);padding:6px 12px;background:var(--est-bg);margin:10px 0 14px;font-size:.9rem}
+</style>
+<div class="wrap">
+<main>
+<h1>TIと中国勢：中国アナログ市場のシェア 2035年予測</h1>
+<p class="meta">作成 2026-11-13 ／ 元資料：10_projection_2035.md ほか（7節に一覧）</p>
+
+<div class="lead">
+<p><span class="tag est">推計</span>中立シナリオでは、2035年の中国アナログ市場で国内勢のシェアが約40%（2024年は22%）になります。TIのシェアは8.4%から約7%へ下がります。</p>
+<p>デジタル絶縁では、TIが23.1%から約14%に下がり、纳芯微（Novosense）が2029年前後にTIを抜きます。車載アナログのTIは20%から約14%です。</p>
+<p>それでも市場が大きくなるため、TIの元建て売上は増える計算です。ただしこれは、フロスト&サリバン（F&S）が描く市場成長に頼った結果です。</p>
+</div>
+
+<h2>1. フロスト&サリバンの数値</h2>
+<p><span class="tag fact">事実</span>纳芯微（Novosense）と圣邦（SG Micro）のH株目論見書に載った、F&Sの数字です。2029〜2030年までが予測で、それ以降はありません。</p>
+
+<div class="box fact">
+<table>
+<thead><tr><th>項目（市場規模は十億元）</th><th class="n">2020</th><th class="n">2024</th><th class="n">2025</th><th class="n">2029予測</th><th class="n">2030予測</th><th>出典</th></tr></thead>
+<tbody>
+<tr><td>中国アナログ市場</td><td class="n">—</td><td class="n">195.3</td><td class="n">218.4</td><td class="n">334.6〜344.4</td><td class="n">389.4</td><td>纳芯微 p.139 / 圣邦</td></tr>
+<tr class="sub"><td>　うち電源管理</td><td class="n">76.8</td><td class="n">124.6</td><td class="n">139.0</td><td class="n">223.4〜226.5</td><td class="n">256.4</td><td>同上</td></tr>
+<tr class="sub"><td>　うち信号鏈</td><td class="n">44.3</td><td class="n">70.7</td><td class="n">79.3</td><td class="n">111.2〜117.8</td><td class="n">133.0</td><td>同上</td></tr>
+<tr><td>中国車載アナログ</td><td class="n">15.7</td><td class="n">37.1</td><td class="n">44.9</td><td class="n">85.8〜89.1</td><td class="n">105.3</td><td>纳芯微 p.142 / 圣邦</td></tr>
+<tr><td>世界車載アナログ</td><td class="n">—</td><td class="n">84.9</td><td class="n">—</td><td class="n">155.3</td><td class="n">—</td><td>纳芯微</td></tr>
+<tr><td>中国デジタル絶縁</td><td class="n">—</td><td class="n">7.1</td><td class="n">—</td><td class="n">欠落</td><td class="n">欠落</td><td>纳芯微 p.141</td></tr>
+<tr><td>国産化率（市場全体）</td><td class="n">11%</td><td class="n">22%</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td>纳芯微</td></tr>
+<tr><td>国内使用市場の国内企業シェア</td><td class="n">—</td><td class="n">23.2%</td><td class="n">—</td><td class="n">30.8%</td><td class="n">—</td><td>纳芯微（3394行）</td></tr>
+<tr><td>車載の国産化率</td><td class="n">—</td><td class="n">約5%</td><td class="n">—</td><td class="n">20%</td><td class="n">—</td><td>纳芯微</td></tr>
+</tbody>
+</table>
+</div>
+<p class="cap">用途別の国産化率（2024年）：消費電子 40〜50%、通訊 20〜25%、工業 10〜15%、車載 約5%（纳芯微）。</p>
+
+<h3>TI（公司A）のシェア</h3>
+<div class="box fact">
+<table>
+<thead><tr><th>分野</th><th class="n">TIシェア</th><th>年・順位</th></tr></thead>
+<tbody>
+<tr><td>中国アナログ全体</td><td class="n">8.4%</td><td>2024年・1位（165億元）</td></tr>
+<tr><td>中国アナログ全体</td><td class="n">9.8%</td><td>2025年・圣邦版</td></tr>
+<tr><td>デジタル絶縁</td><td class="n">23.1%</td><td>2024年・1位（16億元、纳芯微は15.6%）</td></tr>
+<tr><td>車載アナログ</td><td class="n">20.0%</td><td>2024年・1位（74億元）</td></tr>
+<tr><td>電源管理</td><td class="n">8.9%</td><td>2025年・1位</td></tr>
+<tr><td>信号鏈</td><td class="n">11.3%</td><td>2025年・2位</td></tr>
+</tbody>
+</table>
+</div>
+<p class="cap">デジタル絶縁の単価（元／個）：2.0〜4.0（2020）→ 1.2〜2.2（2024）→ 1.7〜2.7（2029予測）。</p>
+
+<p><span class="tag fact">事実</span>「公司A」をTIとみなす根拠：目論見書の注記に「1930年設立・米テキサス本社・Nasdaq上場」とあり、TIに一致します（圣邦H株 p.103 の注記も同じ）。ただしF&Sのベンダー別売上は専門家インタビューと推計で、TI自身の開示値ではありません。</p>
+
+<h2>2. 2035年予測</h2>
+<h3>前提</h3>
+<div class="note"><span class="tag est">仮定</span>以下はすべて私の仮定です。F&Sの予測は2029〜2030年までで、2031〜2035年は延長です。</div>
+<ul>
+<li><b>市場規模</b>：2030年まではF&S（圣邦版）。2031〜35年は年7%（全体）、6%（車載）、7%（絶縁）。絶縁は2024〜30年を年12%と置いた（F&Sに絶縁の時系列は無い）。</li>
+<li><b>国内勢シェアの伸び（年あたり）</b>：中国加速は2020〜24年の実績ペース（+2.75pt）、中立はF&Sの2024〜29年予測ペース（+1.5pt）、中国停滞は+1pt。</li>
+<li><b>TIの取り分</b>：外資の中でのTIの比率を、中立はやや上昇（300mm工場のコストと価格競争力）、加速は横ばい、停滞は上昇と置く。</li>
+<li><b>絶縁の国内勢シェア2024（約35%）</b>は推定。纳芯微15.6%に、「その他41.2%」の約半分を川土微（Chipanalog）・荣湃（2Pai）・思瑞浦（3PEAK）などの国内勢と置いて足した。</li>
+</ul>
+
+<h3>結果（2035年、中国市場）</h3>
+<div class="box est">
+<table>
+<thead><tr><th>分野</th><th>指標</th><th class="n">2024実績</th><th class="n">中国停滞</th><th class="n">中立</th><th class="n">中国加速</th></tr></thead>
+<tbody>
+<tr><td rowspan="3">アナログ全体</td><td>国内勢シェア</td><td class="n">22%</td><td class="n">33%</td><td class="n">40%</td><td class="n">52%</td></tr>
+<tr><td>TIシェア</td><td class="n">8.4%</td><td class="n">8.7%</td><td class="n">7.2%</td><td class="n">5.3%</td></tr>
+<tr><td>TI売上（億元）</td><td class="n">165</td><td class="n">約475</td><td class="n">約395</td><td class="n">約290</td></tr>
+<tr class="hl"><td rowspan="3">絶縁</td><td>国内勢シェア</td><td class="n">約35%（推定）</td><td class="n">45%</td><td class="n">60%</td><td class="n">75%</td></tr>
+<tr class="hl"><td>TIシェア</td><td class="n">23.1%</td><td class="n">20%</td><td class="n">14%</td><td class="n">9%</td></tr>
+<tr class="hl"><td>纳芯微（Novosense）シェア（参考）</td><td class="n">15.6%</td><td class="n">約20%</td><td class="n">約24%</td><td class="n">約30%</td></tr>
+<tr><td rowspan="3">車載アナログ</td><td>国内勢シェア</td><td class="n">約5%</td><td class="n">22%</td><td class="n">35%</td><td class="n">45%</td></tr>
+<tr><td>TIシェア</td><td class="n">20.0%</td><td class="n">17%</td><td class="n">14%</td><td class="n">11%</td></tr>
+<tr><td>TI売上（億元）</td><td class="n">74</td><td class="n">約240</td><td class="n">約195</td><td class="n">約155</td></tr>
+</tbody>
+</table>
+</div>
+<p class="cap"><span class="tag est">推計</span>2024年列のみ事実（F&S）。2035年の3列は仮定にもとづく推計です。</p>
+
+<ul>
+<li>中立では、絶縁で纳芯微が2029年前後にTIを抜く。TIは年−0.8pt、纳芯微は年+0.8ptで、差7.5ptが約5年で埋まる。</li>
+<li>TIはシェアを落としても、市場拡大で元建て売上は伸びる計算。ただしこれはF&Sの市場成長（2024〜30年 年12%）に依存する。年6%成長なら、「中国加速」でTIの中国売上はほぼ横ばい。</li>
+<li>LDOと電流検出アンプは、市場規模とシェアの資料が無く、数値予測はしない。民生LDOは国産化が最も進んだ領域（圣邦が中国LDOで上位3社と主張）で、TIの比率は下がり続ける方向。車載LDOと電流検出（思瑞浦TP181のピン互換、纳芯微NSCSA240のAEC-Q100取得）は、絶縁より数年遅れで同じ道筋をたどりそう。</li>
+</ul>
+
+<h3>図(a)　TIシェア：2024年実績と2035年の3シナリオ</h3>
+<div class="box est">
+<svg viewBox="0 0 640 415" role="img" aria-label="分野別のTIシェア。アナログ全体は8.4%から停滞8.7%・中立7.2%・加速5.3%。絶縁は23.1%から20%・14%・9%。車載は20.0%から17%・14%・11%。">
+<g>
+<line class="grid" x1="120" y1="40" x2="120" y2="372"/>
+<line class="grid" x1="216" y1="40" x2="216" y2="372"/>
+<line class="grid" x1="312" y1="40" x2="312" y2="372"/>
+<line class="grid" x1="408" y1="40" x2="408" y2="372"/>
+<line class="grid" x1="504" y1="40" x2="504" y2="372"/>
+<line class="grid" x1="600" y1="40" x2="600" y2="372"/>
+</g>
+<text x="120" y="32" font-size="13" font-weight="700">アナログ全体</text>
+<text x="114" y="55" font-size="11" text-anchor="end" class="soft">2024実績</text>
+<text x="114" y="79" font-size="11" text-anchor="end" class="soft">2035 停滞</text>
+<text x="114" y="103" font-size="11" text-anchor="end" class="soft">2035 中立</text>
+<text x="114" y="127" font-size="11" text-anchor="end" class="soft">2035 加速</text>
+<rect class="b-base" x="120" y="40" width="161.28" height="20"/>
+<rect class="b-ti1" x="120" y="64" width="167.04" height="20"/>
+<rect class="b-ti2" x="120" y="88" width="138.24" height="20"/>
+<rect class="b-ti3" x="120" y="112" width="101.76" height="20"/>
+<text class="mono" x="287" y="55" font-size="11">8.4%</text>
+<text class="mono" x="293" y="79" font-size="11">8.7%</text>
+<text class="mono" x="264" y="103" font-size="11">7.2%</text>
+<text class="mono" x="228" y="127" font-size="11">5.3%</text>
+
+<text x="120" y="148" font-size="13" font-weight="700">デジタル絶縁</text>
+<text x="114" y="171" font-size="11" text-anchor="end" class="soft">2024実績</text>
+<text x="114" y="195" font-size="11" text-anchor="end" class="soft">2035 停滞</text>
+<text x="114" y="219" font-size="11" text-anchor="end" class="soft">2035 中立</text>
+<text x="114" y="243" font-size="11" text-anchor="end" class="soft">2035 加速</text>
+<rect class="b-base" x="120" y="156" width="443.52" height="20"/>
+<rect class="b-ti1" x="120" y="180" width="384" height="20"/>
+<rect class="b-ti2" x="120" y="204" width="268.8" height="20"/>
+<rect class="b-ti3" x="120" y="228" width="172.8" height="20"/>
+<text class="mono" x="569" y="171" font-size="11">23.1%</text>
+<text class="mono" x="510" y="195" font-size="11">20%</text>
+<text class="mono" x="394" y="219" font-size="11">14%</text>
+<text class="mono" x="298" y="243" font-size="11">9%</text>
+
+<text x="120" y="264" font-size="13" font-weight="700">車載アナログ</text>
+<text x="114" y="287" font-size="11" text-anchor="end" class="soft">2024実績</text>
+<text x="114" y="311" font-size="11" text-anchor="end" class="soft">2035 停滞</text>
+<text x="114" y="335" font-size="11" text-anchor="end" class="soft">2035 中立</text>
+<text x="114" y="359" font-size="11" text-anchor="end" class="soft">2035 加速</text>
+<rect class="b-base" x="120" y="272" width="384" height="20"/>
+<rect class="b-ti1" x="120" y="296" width="326.4" height="20"/>
+<rect class="b-ti2" x="120" y="320" width="268.8" height="20"/>
+<rect class="b-ti3" x="120" y="344" width="211.2" height="20"/>
+<text class="mono" x="510" y="287" font-size="11">20.0%</text>
+<text class="mono" x="452" y="311" font-size="11">17%</text>
+<text class="mono" x="394" y="335" font-size="11">14%</text>
+<text class="mono" x="337" y="359" font-size="11">11%</text>
+
+<line class="axis" x1="120" y1="372" x2="600" y2="372"/>
+<g class="mono" font-size="11" text-anchor="middle">
+<text x="120" y="388">0</text><text x="216" y="388">5</text><text x="312" y="388">10</text>
+<text x="408" y="388">15</text><text x="504" y="388">20</text><text x="600" y="388">25</text>
+</g>
+<text x="360" y="408" font-size="11" text-anchor="middle" class="soft">中国市場でのTIシェア（%）</text>
+</svg>
+</div>
+<div class="legend"><span><i class="lg-base"></i>2024年実績（F&S）</span><span><i class="lg-1"></i>2035 中国停滞</span><span><i class="lg-2"></i>2035 中立</span><span><i class="lg-3"></i>2035 中国加速</span></div>
+<p class="cap">図注：2024年は事実（F&S）、2035年は推計。値は上の表のとおりで、中間年の補間はありません。</p>
+
+<h3>図(b)　絶縁：TIと纳芯微のシェア推移（中立シナリオ）</h3>
+<div class="box est">
+<svg viewBox="0 0 640 330" role="img" aria-label="デジタル絶縁のシェア推移。TIは2024年の23.1%から2035年の約14%へ低下。纳芯微は15.6%から約24%へ上昇。2028〜29年に交差する。">
+<g>
+<line class="grid" x1="60" y1="20" x2="600" y2="20"/>
+<line class="grid" x1="60" y1="72" x2="600" y2="72"/>
+<line class="grid" x1="60" y1="124" x2="600" y2="124"/>
+<line class="grid" x1="60" y1="176" x2="600" y2="176"/>
+<line class="grid" x1="60" y1="228" x2="600" y2="228"/>
+</g>
+<line class="axis" x1="60" y1="280" x2="600" y2="280"/>
+<line class="axis" x1="60" y1="20" x2="60" y2="280"/>
+<g class="mono" font-size="11" text-anchor="end">
+<text x="54" y="284">0</text><text x="54" y="232">5</text><text x="54" y="180">10</text>
+<text x="54" y="128">15</text><text x="54" y="76">20</text><text x="54" y="24">25</text>
+</g>
+<g class="mono" font-size="11" text-anchor="middle">
+<text x="60" y="298">2024</text><text x="109.1" y="298">25</text><text x="158.2" y="298">26</text>
+<text x="207.3" y="298">27</text><text x="256.4" y="298">28</text><text x="305.5" y="298">29</text>
+<text x="354.5" y="298">30</text><text x="403.6" y="298">31</text><text x="452.7" y="298">32</text>
+<text x="501.8" y="298">33</text><text x="550.9" y="298">34</text><text x="600" y="298">2035</text>
+</g>
+<text x="330" y="322" font-size="11" text-anchor="middle" class="soft">年 ／ 縦軸：中国デジタル絶縁市場でのシェア（%）</text>
+<line class="l-ti" x1="60" y1="39.8" x2="600" y2="134.4"/>
+<line class="l-cn" x1="60" y1="117.8" x2="600" y2="30.4"/>
+<circle class="d-ti" cx="60" cy="39.8" r="4.5"/>
+<circle class="d-ti" cx="600" cy="134.4" r="4.5"/>
+<circle class="d-cn" cx="60" cy="117.8" r="4.5"/>
+<circle class="d-cn" cx="600" cy="30.4" r="4.5"/>
+<text class="mono" x="68" y="32" font-size="11" fill="currentColor" style="fill:var(--ti)">TI 23.1%</text>
+<text class="mono" x="68" y="136" font-size="11" style="fill:var(--cn)">纳芯微 15.6%</text>
+<text class="mono" x="594" y="154" font-size="11" text-anchor="end" style="fill:var(--ti)">TI 約14%</text>
+<text class="mono" x="594" y="20" font-size="11" text-anchor="end" style="fill:var(--cn)">纳芯微 約24%</text>
+<circle cx="291.6" cy="80.3" r="6" fill="none" stroke="var(--ink)" stroke-width="2"/>
+<line x1="291.6" y1="87" x2="291.6" y2="196" stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="291.6" y="212" font-size="12" font-weight="700" text-anchor="start">交差：2028〜29年（約19%）</text>
+<text x="291.6" y="229" font-size="11" text-anchor="start" class="soft">直線補間で始点から約4.7年後</text>
+</svg>
+</div>
+<div class="legend"><span><i class="lg-ti"></i>TI</span><span><i class="lg-cn"></i>纳芯微（Novosense）</span></div>
+<p class="cap">図注：2024年と2035年の2点は表の値。その間は直線補間で、各年の予測値ではありません。<span class="tag est">推計</span></p>
+
+<h2>3. 投資家説明会記録からの補足</h2>
+<p><span class="tag fact">事実</span>会社開示（投資家関係活動記録表）にもとづく記述。「私の計算」とあるものだけ推計です。</p>
+<div class="box fact">
+<table>
+<thead><tr><th>項目</th><th class="n">2022</th><th class="n">2023</th><th class="n">2024</th><th class="n">2025Q1</th></tr></thead>
+<tbody>
+<tr><td>纳芯微（Novosense）の絶縁系売上比率</td><td class="n">約75%</td><td class="n">61%</td><td class="n">56.85%</td><td class="n">51.00%</td></tr>
+<tr><td>絶縁系売上（億元、私の計算）</td><td class="n">約12.5</td><td class="n">約8.0（約−36%）</td><td class="n">約11.1</td><td class="n">—</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>纳芯微（2023-08）：海外大手が戻って価格競争が激化。</li>
+<li>纳芯微（2024-08）：「国外头部大厂如TI」を名指しし、利益を削ってでもシェアを守ると発言。</li>
+<li>思瑞浦（3PEAK）：2023年上期の平均単価が前年比約22%下落。TIの中国での価格戦について、電源製品の価格圧力が大きいと回答。</li>
+<li>圣邦（SG Micro）：TIに関する質問8件すべてに「海外同業との製品の重なりは小さい」と定型回答。</li>
+<li>纳芯微の自社推定：車載アナログの世界シェアは「仅约1%」（2026-10）。</li>
+</ul>
+<p><span class="tag est">読み</span>TIは2023年に価格で絶縁市場を取り返しに来ており、国産化は一方通行ではありません。「中国停滞」シナリオの根拠になります。ただし2023年の落ち込みは在庫調整とも区別できません。</p>
+
+<h2>4. TIの分野別売上推計</h2>
+<p><span class="tag est">推計</span>すべて私の計算と仮定で、確度は低〜中です。為替は1ドル=7.2元、TIアナログ売上はFY2025が14,006百万ドル（10-K）、WSTSの2024年アナログ市場は796億ドルを使っています。</p>
+<div class="box est">
+<table>
+<thead><tr><th>分野</th><th>世界市場の推計</th><th class="n">TIシェア仮定</th><th class="n">TI売上</th><th class="n">対FY25アナログ</th></tr></thead>
+<tbody>
+<tr><td>絶縁</td><td>中国71億元≈$1.0B ÷ 中国比率34〜50% → $2.0〜2.9B</td><td class="n">25〜35%</td><td class="n">$0.5〜1.0B</td><td class="n">4〜7%</td></tr>
+<tr><td>車載LDO</td><td>1台あたり20〜60個（仮定）×9,640万台×$0.2〜0.4 → $0.5〜2B</td><td class="n">20〜30%</td><td class="n">$0.2〜0.4B</td><td class="n">1.5〜3%</td></tr>
+<tr><td>電流検出アンプ</td><td>低品質調査のみ（約$0.8B）。$0.6〜1.0B</td><td class="n">30〜45%（根拠なし）</td><td class="n">$0.2〜0.45B</td><td class="n">1.5〜3%</td></tr>
+<tr class="hl"><td>合計</td><td></td><td class="n"></td><td class="n">$0.9〜1.85B</td><td class="n">6〜13%</td></tr>
+</tbody>
+</table>
+</div>
+<p class="cap">絶縁の数量照合：世界出荷は2020年7.01億個（M&amp;M、纳芯微目論見書）。2024年に約2倍と置くと約14億個。TI 25〜35%×ASP $1.5〜2で$0.5〜1.0Bとなり、金額推計と矛盾しません。</p>
+<ul>
+<li>TIは中国で、アナログ全体8.4%に対し絶縁23.1%・車載20.0%。この2領域はTIの平均より約2.5倍強い。</li>
+<li>中国絶縁の2位は纳芯微の15.6%。TIとの差は1.5倍まで縮まっている。</li>
+<li>電流検出アンプとLDOは、市場規模・シェアの一次資料が無く、推計の大部分は仮定。</li>
+</ul>
+
+<h2>5. 世界のTIシェアへの影響、注意点、見張る指標</h2>
+<h3>世界のTIシェアへの影響</h3>
+<p><span class="tag est">推計</span>中国は世界アナログの約34%です。中国でのTIシェア低下（中立−1.2pt、加速−3.1pt）は、世界のTIシェアを約−0.4pt（中立）〜−1.1pt（加速）押し下げます。中国の外で中国勢が伸びる分（東南アジア・インドの中国系メーカー工場）は含みません。</p>
+
+<h3>注意点</h3>
+<ul>
+<li>F&Sの報告書は、上場する中国企業（纳芯微・圣邦）の依頼で作られる。市場拡大と国産化を大きめに描く動機がある。</li>
+<li>公司A＝TIは注記からの特定。F&Sのベンダー別売上は専門家インタビューと推計で、TIの開示値ではない。</li>
+<li>2社の2025年以降の予測は数%ずれる（同じF&Sでも報告書が違う）。</li>
+<li>政策：反ダンピング調査は「中止」で再開可能、米中休戦は2027-01-10まで。再開されれば「中国加速」寄り。</li>
+</ul>
+
+<h3>見張る指標</h3>
+<ol>
+<li>車載の国産化率がF&Sの「2029年20%」の線に乗るか（中国勢の車載売上比率）</li>
+<li>纳芯微の絶縁売上とTI中国売上の伸び率の差</li>
+<li>反ダンピング調査の再開有無（2027-01-10前後）</li>
+<li>海外品の約20%の価格差が縮むか（TIの値下げで中国勢の価格優位が消えるか）</li>
+</ol>
+
+<h2>6. 中国企業の英語名</h2>
+<div class="box">
+<table>
+<thead><tr><th>中国語名</th><th>英語名</th><th>コード・状況</th></tr></thead>
+<tbody>
+<tr><td>纳芯微</td><td>Novosense Microelectronics</td><td class="n">688052</td></tr>
+<tr><td>思瑞浦</td><td>3PEAK</td><td class="n">688536</td></tr>
+<tr><td>圣邦</td><td>SG Micro</td><td class="n">300661</td></tr>
+<tr><td>矽力杰</td><td>Silergy</td><td class="n">6415.TW</td></tr>
+<tr><td>杰华特</td><td>JoulWatt</td><td class="n">688141</td></tr>
+<tr><td>南芯</td><td>Southchip</td><td class="n">688484</td></tr>
+<tr><td>艾为</td><td>Awinic</td><td class="n">688798</td></tr>
+<tr><td>川土微</td><td>Chipanalog</td><td>非上場</td></tr>
+<tr><td>荣湃</td><td>2Pai Semiconductor</td><td>非上場</td></tr>
+<tr><td>芯朋微</td><td>Chipown</td><td class="n">688508</td></tr>
+<tr><td>希荻微</td><td>Halo Microelectronics</td><td class="n">688173</td></tr>
+<tr><td>芯迈</td><td>Xinmai Semiconductor</td><td>H株申請中</td></tr>
+<tr><td>贝克微</td><td>Baker Micro</td><td class="n">2149.HK</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>7. 出典ファイル</h2>
+<ul>
+<li><code>D:\開発用フォルダ\data\projects\0058_analog-ic-datasheet-compare\ti_vs_china\market_share\10_projection_2035.md</code>（主）</li>
+<li><code>D:\開発用フォルダ\data\projects\0058_analog-ic-datasheet-compare\ti_vs_china\market_share\00_synthesis.md</code></li>
+<li><code>D:\開発用フォルダ\data\projects\0058_analog-ic-datasheet-compare\ti_vs_china\market_share\w9_fs_summary.md</code>、<code>w9_fs_tables.csv</code></li>
+<li><code>D:\開発用フォルダ\data\projects\0058_analog-ic-datasheet-compare\ti_vs_china\market_share\w5_cn_ir_records.md</code>、<code>w6_hk_industry_chapters.md</code></li>
+<li>一次資料：纳芯微H株目論見書 p.139/141/142、圣邦H株目論見書 p.103（いずれもF&S報告書の引用）</li>
+</ul>
+</main>
+</div>
+
+</body></html>
