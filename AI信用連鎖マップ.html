@@ -1,0 +1,829 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>AI信用連鎖マップ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+JP:wght@400;500;700&family=Shippori+Antique+B1&display=swap">
+<style>
+/* Layout: 与信審査の台帳。結論→図4枚（全幅・横スクロール可）→台帳3本→出典 */
+:root{
+  --bg:#E9EEF2; --panel:#F6F8FA; --ink:#15212C; --muted:#566673; --rule:#C3CED7; --accent:#1B4F9C;
+  --r-aa:#0E8A86; --r-ig:#6CA63C; --r-edge:#D99A12; --r-hy:#CF3A2E; --r-nr:#7C6BAE; --r-na:#90A0AD;
+  --e-c:#2F6BB8; --e-g:#C41A62; --e-e:#238A5B; --e-d:#99692A;
+  --warn:#C2321F; --band:#DFE6EC; --hl:#F7E7C6; --chip:#DCE4EA; --lab:#E0E7F3;
+  --f-display:"Shippori Antique B1","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --f-body:"IBM Plex Sans JP","Hiragino Sans","Yu Gothic","Noto Sans CJK JP",system-ui,sans-serif;
+  --f-data:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1821; --panel:#17222D; --ink:#E4EBF1; --muted:#98A8B5; --rule:#2F3E4C; --accent:#7FB0F0;
+  --r-aa:#35C2BC; --r-ig:#93C95F; --r-edge:#EDB83B; --r-hy:#F0695B; --r-nr:#A796D8; --r-na:#7E8E9B;
+  --e-c:#6EA6EC; --e-g:#F05A97; --e-e:#52C48D; --e-d:#CC9A55;
+  --warn:#F2806F; --band:#16212B; --hl:#3A2F17; --chip:#25323E; --lab:#1D2B3B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1821; --panel:#17222D; --ink:#E4EBF1; --muted:#98A8B5; --rule:#2F3E4C; --accent:#7FB0F0;
+  --r-aa:#35C2BC; --r-ig:#93C95F; --r-edge:#EDB83B; --r-hy:#F0695B; --r-nr:#A796D8; --r-na:#7E8E9B;
+  --e-c:#6EA6EC; --e-g:#F05A97; --e-e:#52C48D; --e-d:#CC9A55;
+  --warn:#F2806F; --band:#16212B; --hl:#3A2F17; --chip:#25323E; --lab:#1D2B3B; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7}
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:grid;gap:44px}
+h1,h2{font-family:var(--f-display);font-weight:400;text-wrap:balance;line-height:1.3;margin:0}
+h1{font-size:clamp(30px,4.4vw,50px)}
+h2{font-size:clamp(21px,2.4vw,27px)}
+p{margin:0}
+a{color:var(--accent)}
+.head{display:grid;gap:14px}
+.lead{max-width:64ch}
+.sub{color:var(--muted);font-size:13px;max-width:84ch}
+.finds{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));border-top:2px solid var(--ink)}
+.find{padding:14px 18px 14px 0;display:grid;gap:4px;align-content:start;border-bottom:1px solid var(--rule);min-width:0}
+.find b{font-family:var(--f-data);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+.find span{font-size:13.5px}
+.find.new b{color:var(--warn)}
+.sec{display:grid;gap:14px;min-width:0}
+.sec>header{display:grid;gap:4px}
+.fw{margin:0;background:var(--panel);border:1px solid var(--rule);padding:18px 16px;overflow-x:auto}
+.fw svg{display:block;width:100%;height:auto}
+.fw svg.fig{min-width:1000px}
+.tb{overflow-x:auto;border-top:2px solid var(--ink)}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 9px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+th{font-weight:500;color:var(--muted);font-size:12px;white-space:nowrap;background:var(--bg)}
+td.r,th.r{text-align:right}
+td.r{font-family:var(--f-data);white-space:nowrap}
+td.nm{font-weight:600;white-space:nowrap}
+td.nt{min-width:280px}
+td.sr{min-width:160px;font-size:12px}
+small{color:var(--muted)}
+.neg{color:var(--warn)}
+.kc{color:var(--e-c)}.kg{color:var(--e-g)}.ke{color:var(--e-e)}.kd{color:var(--e-d)}
+.pill{display:inline-block;padding:0 7px;font-size:12px;white-space:nowrap;border:1px solid currentColor}
+.t1{color:var(--r-aa)}.t2{color:var(--r-ig)}.t3{color:var(--r-edge)}.t4{color:var(--r-nr)}.t5{color:var(--r-hy)}.t6{color:var(--muted)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:32px}
+ol.chain{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:12px}
+ol.chain li{counter-increment:s;display:grid;grid-template-columns:30px minmax(0,1fr);gap:4px 8px}
+ol.chain li::before{content:counter(s);font-family:var(--f-data);font-size:18px;color:var(--e-g);grid-row:span 2;line-height:1.5}
+.src{font-size:12px;color:var(--muted);columns:2 320px;column-gap:28px;padding:0;margin:0;list-style:none}
+.src li{break-inside:avoid;margin-bottom:3px}
+/* SVG */
+svg text{font-family:var(--f-body);fill:var(--ink)}
+svg .m{fill:var(--muted)}
+svg .h{fill:var(--muted)}
+svg .warn{fill:var(--warn)}
+svg .lbl{font-family:var(--f-body)}
+svg .lbl.c{fill:var(--e-c)} svg .lbl.e{fill:var(--e-e)} svg .lbl.d{fill:var(--e-d)} svg .lbl.g,svg .itn.g{fill:var(--e-g)}
+svg .lbl.warn{fill:var(--warn)}
+svg .labn{fill:var(--ink)} svg .labs{fill:var(--muted)}
+svg .ln{fill:none;stroke-linecap:butt}
+svg .ln.c{stroke:var(--e-c)} svg .ln.e{stroke:var(--e-e)} svg .ln.d{stroke:var(--e-d)} svg .ln.g{stroke:var(--e-g)}
+svg .hd.c{fill:var(--e-c)} svg .hd.e{fill:var(--e-e)} svg .hd.d{fill:var(--e-d)} svg .hd.g{fill:var(--e-g)}
+svg .lab{fill:var(--lab);stroke:var(--accent);stroke-width:1.2}
+svg .sup{fill:var(--panel);stroke:var(--ink);stroke-width:1.2}
+svg .sup.hl{stroke:var(--warn);stroke-width:2.2}
+svg .it{fill:var(--panel);stroke:var(--rule);stroke-width:1}
+svg .gb{fill:var(--panel);stroke:var(--e-g);stroke-width:1.2}
+svg .band{fill:var(--band)}
+svg .band.hlb{fill:var(--hl)}
+svg .rule{stroke:var(--rule);stroke-width:1}
+svg .grid{stroke:var(--rule);stroke-width:1}
+svg .zero{stroke:var(--ink);stroke-width:1.2}
+svg .spec{fill:var(--hl)}
+svg .bar.firm{fill:var(--e-c)}
+svg .bar.soft{fill:var(--e-c);fill-opacity:.42}
+svg .bar.rep{fill:var(--muted);fill-opacity:.5}
+svg .bar.rng{fill:none;stroke:var(--e-c);stroke-width:1.5;stroke-dasharray:4 3}
+svg .pt{stroke:var(--panel);stroke-width:2}
+svg .pt.t1{fill:var(--r-aa)} svg .pt.t2{fill:var(--r-ig)} svg .pt.t3{fill:var(--r-edge)} svg .pt.t4{fill:var(--r-nr)} svg .pt.t5{fill:var(--r-hy)}
+svg .pt.hollow{fill:var(--panel);stroke-width:2.5}
+svg .pt.hollow.t3{stroke:var(--r-edge)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<header class="head">
+  <h1>AI信用連鎖マップ</h1>
+  <p class="lead">AIデータセンターをめぐる「払う約束」「肩代わりの約束」「出資」「融資」を、固定の図4枚と台帳にまとめました。矢印はすべて、お金が出ていく向きです。</p>
+  <p class="sub">2026年11月18日時点。Anthropicは11月17日の届け出（S-1/A第3次訂正）、CoreWeaveとNebiusは7〜9月期の決算で更新しました。OpenAI・Oracle・ソフトバンクGなど他社の数値は11月9日時点のままで、NVIDIAの次回決算も未反映です。金額の多くは数年から20年分の総額や上限で、足し合わせることはできません。このページを作ったClaudeの開発元Anthropicも対象に含まれますが、他社と同じ基準で記載しています。</p>
+  <div class="finds">
+    <div class="find new"><b>金額非開示</b><span>AnthropicとCoreWeaveの契約。2026年4月に複数年契約が発表されましたが、AnthropicのIPO書類に社名はありません。Nebiusとの契約は確認できませんでした。</span></div>
+    <div class="find"><b>$900.9B</b><span>Anthropicの計算資源の約束の総額。相手と金額が分かるのは$683.5Bで、うち約$206Bは解約できるか提供が前提です。</span></div>
+    <div class="find"><b>約$321B</b><span>明示された肩代わりの上限。NVIDIA・Alphabet・Broadcom・Metaの4社でほぼ全額で、4社とも保証先の取引先です。</span></div>
+    <div class="find"><b>9セント</b><span>CoreWeaveの債務$1あたりの手元資金（制限付き現金を含めると14セント）。債務は3か月で$35.6Bから$46.9Bに増えました。</span></div>
+  </div>
+</header>
+
+<section class="sec">
+  <header><h2>図1　ラボをめぐる循環</h2><p class="sub">中央の相手先ごとに、左がOpenAIとの間、右がAnthropicとの間の流れです。上の線はラボが払う約束、下の線は相手先からラボへ戻るお金（出資・融資）です。赤枠は今回確認した相手先です。</p></header>
+  <figure class="fw"><svg viewBox="0 0 1240 1474" class="fig" role="img" aria-label="OpenAIとAnthropicをめぐる払う約束と出資の流れ">
+<text x="8.0" y="22.0" class="h" font-size="13" font-weight="600">左：OpenAIとの間</text>
+<text x="1232.0" y="22.0" class="h" text-anchor="end" font-size="13" font-weight="600">右：Anthropicとの間</text>
+<text x="620.0" y="22.0" class="h" text-anchor="middle" font-size="13" font-weight="600">相手先</text>
+<line x1="330.0" y1="48.0" x2="362.4" y2="48.0" class="ln c" stroke-width="4.0"/><polygon points="370.0,48.0 361.0,53.0 361.0,43.0" class="hd c"/>
+<text x="378.0" y="52.0" class="m">払う約束（ラボ→相手）</text>
+<line x1="560.0" y1="48.0" x2="592.4" y2="48.0" class="ln e" stroke-width="4.0"/><polygon points="600.0,48.0 591.0,53.0 591.0,43.0" class="hd e"/>
+<text x="608.0" y="52.0" class="m">出資（相手→ラボ）</text>
+<line x1="760.0" y1="48.0" x2="792.4" y2="48.0" class="ln d" stroke-width="4.0"/><polygon points="800.0,48.0 791.0,53.0 791.0,43.0" class="hd d"/>
+<text x="808.0" y="52.0" class="m">融資</text>
+<text x="860.0" y="52.0" class="m">線の太さ＝金額　点線＝推計・解約可・協議中</text>
+<rect x="8.0" y="78.0" width="160.0" height="1330.0" rx="3" class="lab"/>
+<text x="88.0" y="108.0" class="labn" text-anchor="middle" font-size="20" font-weight="700">OpenAI</text>
+<text x="88.0" y="130.0" class="labs" text-anchor="middle" font-size="12">格付けなし</text>
+<text x="88.0" y="147.0" class="labs" text-anchor="middle" font-size="12">約束 $665B（報道）</text>
+<text x="88.0" y="164.0" class="labs" text-anchor="middle" font-size="12">年換算売上 約$50B</text>
+<text x="88.0" y="181.0" class="labs" text-anchor="middle" font-size="12">（9月）</text>
+<text x="88.0" y="743.0" class="labn" text-anchor="middle" font-size="20" font-weight="700">OpenAI</text>
+<text x="88.0" y="765.0" class="labs" text-anchor="middle" font-size="12">格付けなし</text>
+<text x="88.0" y="782.0" class="labs" text-anchor="middle" font-size="12">約束 $665B（報道）</text>
+<text x="88.0" y="799.0" class="labs" text-anchor="middle" font-size="12">年換算売上 約$50B</text>
+<text x="88.0" y="816.0" class="labs" text-anchor="middle" font-size="12">（9月）</text>
+<text x="88.0" y="1298.0" class="labn" text-anchor="middle" font-size="20" font-weight="700">OpenAI</text>
+<text x="88.0" y="1320.0" class="labs" text-anchor="middle" font-size="12">格付けなし</text>
+<text x="88.0" y="1337.0" class="labs" text-anchor="middle" font-size="12">約束 $665B（報道）</text>
+<text x="88.0" y="1354.0" class="labs" text-anchor="middle" font-size="12">年換算売上 約$50B</text>
+<text x="88.0" y="1371.0" class="labs" text-anchor="middle" font-size="12">（9月）</text>
+<rect x="1072.0" y="78.0" width="160.0" height="1330.0" rx="3" class="lab"/>
+<text x="1152.0" y="108.0" class="labn" text-anchor="middle" font-size="20" font-weight="700">Anthropic</text>
+<text x="1152.0" y="130.0" class="labs" text-anchor="middle" font-size="12">格付けなし</text>
+<text x="1152.0" y="147.0" class="labs" text-anchor="middle" font-size="12">約束 $900.9B（開示）</text>
+<text x="1152.0" y="164.0" class="labs" text-anchor="middle" font-size="12">手元 $131.9B</text>
+<text x="1152.0" y="181.0" class="labs" text-anchor="middle" font-size="12">Q3売上 $17.0B</text>
+<text x="1152.0" y="743.0" class="labn" text-anchor="middle" font-size="20" font-weight="700">Anthropic</text>
+<text x="1152.0" y="765.0" class="labs" text-anchor="middle" font-size="12">格付けなし</text>
+<text x="1152.0" y="782.0" class="labs" text-anchor="middle" font-size="12">約束 $900.9B（開示）</text>
+<text x="1152.0" y="799.0" class="labs" text-anchor="middle" font-size="12">手元 $131.9B</text>
+<text x="1152.0" y="816.0" class="labs" text-anchor="middle" font-size="12">Q3売上 $17.0B</text>
+<text x="1152.0" y="1298.0" class="labn" text-anchor="middle" font-size="20" font-weight="700">Anthropic</text>
+<text x="1152.0" y="1320.0" class="labs" text-anchor="middle" font-size="12">格付けなし</text>
+<text x="1152.0" y="1337.0" class="labs" text-anchor="middle" font-size="12">約束 $900.9B（開示）</text>
+<text x="1152.0" y="1354.0" class="labs" text-anchor="middle" font-size="12">手元 $131.9B</text>
+<text x="1152.0" y="1371.0" class="labs" text-anchor="middle" font-size="12">Q3売上 $17.0B</text>
+<rect x="168" y="84.0" width="904" height="78" class="band"/>
+<rect x="525.0" y="94.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="120.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">SB Energy・SBG</text>
+<text x="620.0" y="138.0" class="m" text-anchor="middle" font-size="11">OpenAIのOhio拠点の大家と親会社</text>
+<line x1="171.0" y1="111.0" x2="505.5" y2="111.0" class="ln c" stroke-width="11.4"/><polygon points="522.0,111.0 502.6,124.1 502.6,97.9" class="hd c"/>
+<text x="346.5" y="100.3" class="lbl c" text-anchor="middle" font-size="12.5" font-weight="600">$430B　20年リース（上限）</text>
+<line x1="522.0" y1="137.0" x2="178.7" y2="137.0" class="ln e" stroke-width="4.4"/><polygon points="171.0,137.0 180.0,131.9 180.0,142.1" class="hd e"/>
+<text x="346.5" y="152.2" class="lbl e" text-anchor="middle" font-size="12.5">$64.6B　SBGの出資（累計）</text>
+<rect x="525.0" y="172.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="198.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">Broadcom</text>
+<text x="620.0" y="216.0" class="m" text-anchor="middle" font-size="11">TPU・カスタムチップ</text>
+<line x1="171.0" y1="189.0" x2="507.1" y2="189.0" class="ln c" stroke-width="10.3" stroke-dasharray="2 5"/><polygon points="522.0,189.0 504.5,200.8 504.5,177.2" class="hd c"/>
+<text x="346.5" y="178.9" class="lbl c" text-anchor="middle" font-size="12.5" font-weight="600">$350B　10GW分（推計）</text>
+<line x1="1069.0" y1="189.0" x2="728.1" y2="189.0" class="ln c" stroke-width="7.0"/><polygon points="718.0,189.0 729.9,181.0 729.9,197.0" class="hd c"/>
+<text x="893.5" y="180.5" class="lbl c" text-anchor="middle" font-size="12.5" font-weight="600">$161.2B　TPUリース5年（SPV経由）</text>
+<line x1="718.0" y1="215.0" x2="1061.3" y2="215.0" class="ln d" stroke-width="3.6"/><polygon points="1069.0,215.0 1060.0,220.0 1060.0,210.0" class="hd d"/>
+<text x="893.5" y="229.8" class="lbl d" text-anchor="middle" font-size="12.5">$43B　融資枠$42B＋私募$1B</text>
+<rect x="168" y="240.0" width="904" height="78" class="band"/>
+<rect x="525.0" y="250.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="276.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">Oracle</text>
+<text x="620.0" y="294.0" class="m" text-anchor="middle" font-size="11">OCI</text>
+<line x1="171.0" y1="267.0" x2="508.2" y2="267.0" class="ln c" stroke-width="9.5"/><polygon points="522.0,267.0 505.8,278.0 505.8,256.0" class="hd c"/>
+<text x="346.5" y="257.2" class="lbl c" text-anchor="middle" font-size="12.5" font-weight="600">$300B　約5年</text>
+<rect x="525.0" y="328.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="354.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">Microsoft</text>
+<text x="620.0" y="372.0" class="m" text-anchor="middle" font-size="11">Azure</text>
+<line x1="171.0" y1="345.0" x2="509.4" y2="345.0" class="ln c" stroke-width="8.7"/><polygon points="522.0,345.0 507.2,355.0 507.2,335.0" class="hd c"/>
+<text x="346.5" y="335.7" class="lbl c" text-anchor="middle" font-size="12.5" font-weight="600">$250B　Azure追加購入</text>
+<line x1="522.0" y1="371.0" x2="180.2" y2="371.0" class="ln e" stroke-width="6.4" stroke-dasharray="2 5"/><polygon points="171.0,371.0 181.9,363.7 181.9,378.3" class="hd e"/>
+<text x="346.5" y="387.2" class="lbl e" text-anchor="middle" font-size="12.5">$135B　約27%の持分（評価額）</text>
+<line x1="1069.0" y1="345.0" x2="725.6" y2="345.0" class="ln c" stroke-width="3.8"/><polygon points="718.0,345.0 727.0,340.0 727.0,350.0" class="hd c"/>
+<text x="893.5" y="338.1" class="lbl c" text-anchor="middle" font-size="12.5">$47.2B　〜2033年6月（最大$49.2B）</text>
+<line x1="718.0" y1="371.0" x2="1061.3" y2="371.0" class="ln e" stroke-width="1.6"/><polygon points="1069.0,371.0 1060.0,376.0 1060.0,366.0" class="hd e"/>
+<text x="893.5" y="384.8" class="lbl e" text-anchor="middle" font-size="12.5">$1B　私募（別途最大$5Bを発表）</text>
+<rect x="168" y="396.0" width="904" height="78" class="band"/>
+<rect x="525.0" y="406.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="432.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">Alphabet</text>
+<text x="620.0" y="450.0" class="m" text-anchor="middle" font-size="11">Google Cloud・TPU</text>
+<line x1="1069.0" y1="423.0" x2="726.8" y2="423.0" class="ln c" stroke-width="6.1"/><polygon points="718.0,423.0 728.3,416.0 728.3,430.0" class="hd c"/>
+<text x="893.5" y="415.0" class="lbl c" text-anchor="middle" font-size="12.5" font-weight="600">$121.3B　〜2033年7月（別途TPU $125〜150B）</text>
+<line x1="718.0" y1="449.0" x2="1061.3" y2="449.0" class="ln e" stroke-width="3.0"/><polygon points="1069.0,449.0 1060.0,454.0 1060.0,444.0" class="hd e"/>
+<text x="893.5" y="463.5" class="lbl e" text-anchor="middle" font-size="12.5">$30B　私募$10B＋2026年契約の出資</text>
+<rect x="525.0" y="484.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="510.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">Amazon</text>
+<text x="620.0" y="528.0" class="m" text-anchor="middle" font-size="11">AWS</text>
+<line x1="171.0" y1="501.0" x2="512.7" y2="501.0" class="ln c" stroke-width="6.5"/><polygon points="522.0,501.0 511.0,508.4 511.0,493.6" class="hd c"/>
+<text x="346.5" y="492.8" class="lbl c" text-anchor="middle" font-size="12.5" font-weight="600">$138B　8年</text>
+<line x1="522.0" y1="527.0" x2="178.7" y2="527.0" class="ln e" stroke-width="3.9"/><polygon points="171.0,527.0 180.0,522.0 180.0,532.0" class="hd e"/>
+<text x="346.5" y="541.9" class="lbl e" text-anchor="middle" font-size="12.5">$50B　優先株</text>
+<line x1="1069.0" y1="501.0" x2="726.3" y2="501.0" class="ln c" stroke-width="5.8"/><polygon points="718.0,501.0 727.8,494.4 727.8,507.6" class="hd c"/>
+<text x="893.5" y="493.1" class="lbl c" text-anchor="middle" font-size="12.5" font-weight="600">$110B　〜2036年4月</text>
+<line x1="718.0" y1="527.0" x2="1061.3" y2="527.0" class="ln e" stroke-width="3.2"/><polygon points="1069.0,527.0 1060.0,532.0 1060.0,522.0" class="hd e"/>
+<text x="893.5" y="541.6" class="lbl e" text-anchor="middle" font-size="12.5">$33B　累計（上限）</text>
+<rect x="168" y="552.0" width="904" height="78" class="band"/>
+<rect x="525.0" y="562.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="588.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">SpaceX/xAI</text>
+<text x="620.0" y="606.0" class="m" text-anchor="middle" font-size="11">Colossus</text>
+<line x1="1069.0" y1="579.0" x2="726.7" y2="579.0" class="ln c" stroke-width="6.0" stroke-dasharray="2 5"/><polygon points="718.0,579.0 728.3,572.1 728.3,585.9" class="hd c"/>
+<text x="893.5" y="571.0" class="lbl c" text-anchor="middle" font-size="12.5" font-weight="600">$120.5B　2027年以降は90日前通知で解約可</text>
+<rect x="525.0" y="640.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="666.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">AMD</text>
+<text x="620.0" y="684.0" class="m" text-anchor="middle" font-size="11">GPU</text>
+<line x1="171.0" y1="657.0" x2="514.4" y2="657.0" class="ln c" stroke-width="5.2" stroke-dasharray="2 5"/><polygon points="522.0,657.0 513.0,663.0 513.0,651.0" class="hd c"/>
+<text x="346.5" y="649.4" class="lbl c" text-anchor="middle" font-size="12.5">$90B　6GW分（推計）</text>
+<line x1="522.0" y1="683.0" x2="178.7" y2="683.0" class="ln e" stroke-width="2.9" stroke-dasharray="2 5"/><polygon points="171.0,683.0 180.0,678.0 180.0,688.0" class="hd e"/>
+<text x="346.5" y="697.5" class="lbl e" text-anchor="middle" font-size="12.5">$28.6B　ワラント（評価額）</text>
+<line x1="1069.0" y1="657.0" x2="725.6" y2="657.0" class="ln c" stroke-width="2.5"/><polygon points="718.0,657.0 727.0,652.0 727.0,662.0" class="hd c"/>
+<text x="893.5" y="650.8" class="lbl c" text-anchor="middle" font-size="12.5">$20B　$20B超・解約不可</text>
+<line x1="718.0" y1="683.0" x2="1061.3" y2="683.0" class="ln e" stroke-width="1.6"/><polygon points="1069.0,683.0 1060.0,688.0 1060.0,678.0" class="hd e"/>
+<text x="893.5" y="696.8" class="lbl e" text-anchor="middle" font-size="12.5">$2.5B　私募（別途最大$5B）</text>
+<rect x="168" y="708.0" width="904" height="78" class="band"/>
+<rect x="525.0" y="718.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="744.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">NVIDIA</text>
+<text x="620.0" y="762.0" class="m" text-anchor="middle" font-size="11">GPUは各クラウド経由で購入</text>
+<line x1="522.0" y1="761.0" x2="178.7" y2="761.0" class="ln e" stroke-width="3.0"/><polygon points="171.0,761.0 180.0,756.0 180.0,766.0" class="hd e"/>
+<text x="346.5" y="775.5" class="lbl e" text-anchor="middle" font-size="12.5">$30B　出資</text>
+<line x1="718.0" y1="761.0" x2="1061.3" y2="761.0" class="ln e" stroke-width="1.7"/><polygon points="1069.0,761.0 1060.0,766.0 1060.0,756.0" class="hd e"/>
+<text x="893.5" y="774.9" class="lbl e" text-anchor="middle" font-size="12.5">$10B　私募</text>
+<rect x="525.0" y="796.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="822.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">Nscale</text>
+<text x="620.0" y="840.0" class="m" text-anchor="middle" font-size="11">ネオクラウド（英）</text>
+<line x1="1069.0" y1="813.0" x2="725.6" y2="813.0" class="ln c" stroke-width="3.7"/><polygon points="718.0,813.0 727.0,808.0 727.0,818.0" class="hd c"/>
+<text x="893.5" y="806.2" class="lbl c" text-anchor="middle" font-size="12.5">$44.6B　〜2033年（提供分のみ支払い）</text>
+<rect x="168" y="864.0" width="904" height="78" class="band"/>
+<rect x="525.0" y="874.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="900.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">Lambda</text>
+<text x="620.0" y="918.0" class="m" text-anchor="middle" font-size="11">ネオクラウド（米）</text>
+<line x1="1069.0" y1="891.0" x2="725.6" y2="891.0" class="ln c" stroke-width="3.5" stroke-dasharray="2 5"/><polygon points="718.0,891.0 727.0,886.0 727.0,896.0" class="hd c"/>
+<text x="893.5" y="884.2" class="lbl c" text-anchor="middle" font-size="12.5">$41.3B　うち$34.9Bは現在解約可能</text>
+<rect x="525.0" y="952.0" width="190.0" height="58.0" rx="3" class="sup hl"/>
+<text x="620.0" y="978.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">CoreWeave</text>
+<text x="620.0" y="996.0" class="m" text-anchor="middle" font-size="11">ネオクラウド（米）・B+</text>
+<line x1="171.0" y1="969.0" x2="514.4" y2="969.0" class="ln c" stroke-width="2.6"/><polygon points="522.0,969.0 513.0,974.0 513.0,964.0" class="hd c"/>
+<text x="346.5" y="962.7" class="lbl c" text-anchor="middle" font-size="12.5">$22.4B　累計（上限）</text>
+<line x1="522.0" y1="995.0" x2="178.7" y2="995.0" class="ln e" stroke-width="1.6"/><polygon points="171.0,995.0 180.0,990.0 180.0,1000.0" class="hd e"/>
+<text x="346.5" y="1008.8" class="lbl e" text-anchor="middle" font-size="12.5">$0.35B　株式発行</text>
+<line x1="1069.0" y1="969.0" x2="725.6" y2="969.0" class="ln c" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="718.0,969.0 727.0,964.0 727.0,974.0" class="hd c"/>
+<text x="893.5" y="963.3" class="lbl c warn" text-anchor="middle" font-size="12.5">2026年4月に複数年契約・金額非開示</text>
+<rect x="168" y="1020.0" width="904" height="78" class="band"/>
+<rect x="525.0" y="1030.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="1056.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">短期契約の相手</text>
+<text x="620.0" y="1074.0" class="m" text-anchor="middle" font-size="11">社名非開示</text>
+<line x1="1069.0" y1="1047.0" x2="725.6" y2="1047.0" class="ln c" stroke-width="2.3"/><polygon points="718.0,1047.0 727.0,1042.0 727.0,1052.0" class="hd c"/>
+<text x="893.5" y="1040.9" class="lbl c" text-anchor="middle" font-size="12.5">$17.4B　最低支払額（9月末）・割高</text>
+<rect x="525.0" y="1108.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="1134.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">Rumble</text>
+<text x="620.0" y="1152.0" class="m" text-anchor="middle" font-size="11">Northern Data買収</text>
+<line x1="1069.0" y1="1125.0" x2="725.6" y2="1125.0" class="ln c" stroke-width="2.0" stroke-dasharray="2 5"/><polygon points="718.0,1125.0 727.0,1120.0 727.0,1130.0" class="hd c"/>
+<text x="893.5" y="1119.0" class="lbl c" text-anchor="middle" font-size="12.5">$13.7B　6年（報道・未確認）</text>
+<rect x="168" y="1176.0" width="904" height="78" class="band"/>
+<rect x="525.0" y="1186.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="1212.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">Micron・TSMC</text>
+<text x="620.0" y="1230.0" class="m" text-anchor="middle" font-size="11">半導体</text>
+<line x1="718.0" y1="1229.0" x2="1061.3" y2="1229.0" class="ln e" stroke-width="1.6"/><polygon points="1069.0,1229.0 1060.0,1234.0 1060.0,1224.0" class="hd e"/>
+<text x="893.5" y="1242.8" class="lbl e" text-anchor="middle" font-size="12.5">$1.5B　私募</text>
+<rect x="525.0" y="1264.0" width="190.0" height="58.0" rx="3" class="sup"/>
+<text x="620.0" y="1290.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">Meta</text>
+<text x="620.0" y="1308.0" class="m" text-anchor="middle" font-size="11">自社DC</text>
+<line x1="1069.0" y1="1281.0" x2="725.6" y2="1281.0" class="ln c" stroke-width="1.7" stroke-dasharray="2 5"/><polygon points="718.0,1281.0 727.0,1276.0 727.0,1286.0" class="hd c"/>
+<text x="893.5" y="1275.1" class="lbl c" text-anchor="middle" font-size="12.5">$10B　最大$10Bを協議（7月報道）</text>
+<rect x="168" y="1332.0" width="904" height="78" class="band"/>
+<rect x="525.0" y="1342.0" width="190.0" height="58.0" rx="3" class="sup hl"/>
+<text x="620.0" y="1368.0" class="supn" text-anchor="middle" font-size="15" font-weight="700">Nebius</text>
+<text x="620.0" y="1386.0" class="m" text-anchor="middle" font-size="11">ネオクラウド（蘭）</text>
+<text x="893.5" y="1363.0" class="warn" text-anchor="middle" font-size="12.5" font-weight="600">契約は確認できず</text>
+<text x="8.0" y="1436.0" class="m" font-size="12">金額は数年から20年分の総額や上限で、期間も条件も違うため足し合わせられません。推計：OpenAI→Broadcom・AMD（Tunguz）。評価額：Microsoftの持分、AMDのワラント。</text>
+<text x="8.0" y="1454.0" class="m" font-size="12">出典：Anthropic S-1/A第3次（11/17）、Microsoft・Amazon・AMD・Broadcomの10-Q、SB Energy S-1/A、CoreWeave発表（4/10）、報道（Rumble、Meta協議）。Nebiusは11/12の決算資料にAnthropicの記載なし。</text>
+</svg></figure>
+</section>
+
+<section class="sec">
+  <header><h2>図2　肩代わりと融資の連鎖</h2><p class="sub">1行が1つの資金の鎖です。左から右へ「払う人→箱」、右から左へ「貸し手→箱」と流れ、箱の下に、払う人が倒れた時に代わりに払う保証人を置いています。色付きの行が今回更新した会社です。</p></header>
+  <figure class="fw"><svg viewBox="-6 0 1212 2562.0" class="fig" role="img" aria-label="保証と融資の連鎖図"><text x="0.0" y="24.0" class="h" font-size="13" font-weight="600">その先の払い手</text>
+<text x="300.0" y="24.0" class="h" font-size="13" font-weight="600">払う側（借り手・顧客）</text>
+<text x="625.0" y="24.0" class="h" font-size="13" font-weight="600">箱（SPV・建物・借り手）</text>
+<text x="625.0" y="42.0" class="m" font-size="12">下：肩代わりする保証人</text>
+<text x="1005.0" y="24.0" class="h" font-size="13" font-weight="600">貸し手・出資者</text>
+<text x="0.0" y="80.0" class="rt" font-size="13.5" font-weight="700">OpenAIのOhio拠点（SB Energy）</text>
+<rect x="625.0" y="108.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="130.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">SB Energy</text>
+<text x="732.5" y="148.0" class="m" text-anchor="middle" font-size="11.5">Ohio・PORTS／親：SBG</text>
+<rect x="300.0" y="115.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="131.0" class="itn" font-size="13" font-weight="600">OpenAI</text>
+<text x="308.0" y="146.0" class="m" font-size="11">格付けなし</text>
+<line x1="458.0" y1="134.0" x2="607.5" y2="134.0" class="ln c" stroke-width="10.0"/><polygon points="622.0,134.0 605.0,145.5 605.0,122.5" class="hd c"/>
+<text x="465.0" y="124.0" class="lbl c" font-size="12" font-weight="600">$430B　20年・上限</text>
+<rect x="1005.0" y="93.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="109.0" class="itn" font-size="13" font-weight="600">ソフトバンクG</text>
+<text x="1013.0" y="124.0" class="m" font-size="11">親会社</text>
+<rect x="1005.0" y="137.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="153.0" class="itn" font-size="13" font-weight="600">NVIDIA</text>
+<text x="1013.0" y="168.0" class="m" font-size="11">前払い・IPO時</text>
+<line x1="1002.0" y1="112.0" x2="850.6" y2="125.6" class="ln e" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="843.0,126.3 851.5,120.5 852.4,130.5" class="hd e"/>
+<text x="995.0" y="106.3" class="lbl e" text-anchor="end" font-size="12" font-weight="600">出資　非開示</text>
+<line x1="1002.0" y1="156.0" x2="850.6" y2="142.4" class="ln e" stroke-width="1.6"/><polygon points="843.0,141.7 852.4,137.5 851.5,147.5" class="hd e"/>
+<text x="995.0" y="150.2" class="lbl e" text-anchor="end" font-size="12" font-weight="600">出資　$3B</text>
+<rect x="625.0" y="184.0" width="215.0" height="40.0" rx="3" class="gb" stroke-dasharray="5 4"/>
+<text x="633.0" y="201.0" class="itn g" font-size="12.5" font-weight="700">NVIDIA</text>
+<text x="633.0" y="216.0" class="lbl g" font-size="11.5">保証 $105B・2029年度から段階発効</text>
+<line x1="816.0" y1="183.0" x2="816.0" y2="169.7" class="ln g" stroke-width="5.1" stroke-dasharray="7 4"/><polygon points="816.0,162.0 821.9,171.0 810.1,171.0" class="hd g"/>
+<text x="808.0" y="176.0" class="lbl g" text-anchor="end" font-size="12" font-weight="700">肩代わり $105B</text>
+<text x="0.0" y="244.0" class="m" font-size="12">OpenAIが一定の格付けを得ると保証は終わる。OpenAIが払えなければNVIDIAが借り手の立場を継ぎ、OpenAIに補償を求める。</text>
+<line x1="0" x2="1200" y1="256.0" y2="256.0" class="rule"/>
+<text x="0.0" y="276.0" class="rt" font-size="13.5" font-weight="700">AnthropicのTPUリース（AI XPV）</text>
+<rect x="625.0" y="286.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="308.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">AI XPV（SPV）</text>
+<text x="732.5" y="326.0" class="m" text-anchor="middle" font-size="11.5">TPUラックを保有</text>
+<rect x="300.0" y="293.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="309.0" class="itn" font-size="13" font-weight="600">Anthropic</text>
+<text x="308.0" y="324.0" class="m" font-size="11">格付けなし</text>
+<line x1="458.0" y1="312.0" x2="612.8" y2="312.0" class="ln c" stroke-width="6.3"/><polygon points="622.0,312.0 611.2,319.3 611.2,304.7" class="hd c"/>
+<text x="465.0" y="303.8" class="lbl c" font-size="12" font-weight="600">$161.2B　5年・解約不可</text>
+<rect x="1005.0" y="293.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="309.0" class="itn" font-size="13" font-weight="600">Apollo・Blackstone</text>
+<text x="1013.0" y="324.0" class="m" font-size="11">割当は非開示</text>
+<line x1="1002.0" y1="312.0" x2="850.6" y2="312.0" class="ln d" stroke-width="4.9"/><polygon points="843.0,312.0 852.0,306.3 852.0,317.7" class="hd d"/>
+<text x="995.0" y="304.5" class="lbl d" text-anchor="end" font-size="12" font-weight="600">融資　$98B</text>
+<rect x="625.0" y="362.0" width="215.0" height="76.0" rx="3" class="gb" stroke-dasharray="5 4"/>
+<text x="633.0" y="379.0" class="itn g" font-size="12.5" font-weight="700">Broadcom</text>
+<text x="633.0" y="394.0" class="lbl g" font-size="11.5">保証$29B＋残価$43.5B</text>
+<text x="633.0" y="415.0" class="itn g" font-size="12.5" font-weight="700">Anthropic（親）</text>
+<text x="633.0" y="430.0" class="lbl g" font-size="11.5">子会社保証・担保現金$2.6B</text>
+<line x1="816.0" y1="361.0" x2="816.0" y2="347.6" class="ln g" stroke-width="4.3" stroke-dasharray="7 4"/><polygon points="816.0,340.0 821.0,349.0 811.0,349.0" class="hd g"/>
+<text x="808.0" y="354.0" class="lbl g" text-anchor="end" font-size="12" font-weight="700">肩代わり $72.5B</text>
+<text x="0.0" y="458.0" class="m" font-size="12">XPVは借りた$98BでBroadcomからTPUラックを買う。BroadcomはAnthropicに$42Bの融資枠を出し、家賃の一部はここから払える（循環）。</text>
+<line x1="0" x2="1200" y1="470.0" y2="470.0" class="rule"/>
+<text x="0.0" y="490.0" class="rt" font-size="13.5" font-weight="700">Oracle向けDC（Vantage）</text>
+<rect x="625.0" y="500.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="522.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">Vantage</text>
+<text x="732.5" y="540.0" class="m" text-anchor="middle" font-size="11.5">Texas・Wisconsin</text>
+<rect x="300.0" y="507.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="523.0" class="itn" font-size="13" font-weight="600">Oracle</text>
+<text x="308.0" y="538.0" class="m" font-size="11">BBB−</text>
+<line x1="458.0" y1="526.0" x2="614.4" y2="526.0" class="ln c" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="622.0,526.0 613.0,531.0 613.0,521.0" class="hd c"/>
+<text x="465.0" y="520.3" class="lbl c warn" font-size="12" font-weight="600">リース</text>
+<rect x="0.0" y="507.0" width="140.0" height="38.0" rx="3" class="it"/>
+<text x="8.0" y="523.0" class="itn" font-size="13" font-weight="600">OpenAI</text>
+<line x1="143.0" y1="526.0" x2="284.5" y2="526.0" class="ln c" stroke-width="8.7"/><polygon points="297.0,526.0 282.3,536.0 282.3,516.0" class="hd c"/>
+<text x="150.0" y="516.7" class="lbl c" font-size="12" font-weight="600">$300B　約5年</text>
+<rect x="1005.0" y="507.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="523.0" class="itn" font-size="13" font-weight="600">JPM・MUFGほか</text>
+<text x="1013.0" y="538.0" class="m" font-size="11">7行</text>
+<line x1="1002.0" y1="526.0" x2="850.6" y2="526.0" class="ln d" stroke-width="3.1"/><polygon points="843.0,526.0 852.0,521.0 852.0,531.0" class="hd d"/>
+<text x="995.0" y="519.5" class="lbl d" text-anchor="end" font-size="12" font-weight="600">融資　$38B</text>
+<text x="0.0" y="574.0" class="m" font-size="12">保証人なし。返済原資はOracleの家賃で、その先はOpenAIの支払い。Oracleの未開始リースは計$288B。</text>
+<line x1="0" x2="1200" y1="586.0" y2="586.0" class="rule"/>
+<text x="0.0" y="606.0" class="rt" font-size="13.5" font-weight="700">Oracle向けDC（Project Jupiter）</text>
+<rect x="625.0" y="616.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="638.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">STACK</text>
+<text x="732.5" y="656.0" class="m" text-anchor="middle" font-size="11.5">Project Jupiter／親：Blue Owl</text>
+<rect x="300.0" y="623.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="639.0" class="itn" font-size="13" font-weight="600">Oracle</text>
+<text x="308.0" y="654.0" class="m" font-size="11">BBB−</text>
+<line x1="458.0" y1="642.0" x2="614.4" y2="642.0" class="ln c" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="622.0,642.0 613.0,647.0 613.0,637.0" class="hd c"/>
+<text x="465.0" y="636.3" class="lbl c warn" font-size="12" font-weight="600">リース</text>
+<rect x="0.0" y="623.0" width="140.0" height="38.0" rx="3" class="it"/>
+<text x="8.0" y="639.0" class="itn" font-size="13" font-weight="600">OpenAI</text>
+<line x1="143.0" y1="642.0" x2="289.4" y2="642.0" class="ln c" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="297.0,642.0 288.0,647.0 288.0,637.0" class="hd c"/>
+<text x="150.0" y="636.3" class="lbl c" font-size="12" font-weight="600">同上</text>
+<rect x="1005.0" y="623.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="639.0" class="itn" font-size="13" font-weight="600">融資団</text>
+<text x="1013.0" y="654.0" class="m" font-size="11">銀行名未確認・89〜91セント</text>
+<line x1="1002.0" y1="642.0" x2="850.6" y2="642.0" class="ln d" stroke-width="2.1"/><polygon points="843.0,642.0 852.0,637.0 852.0,647.0" class="hd d"/>
+<text x="995.0" y="635.9" class="lbl d" text-anchor="end" font-size="12" font-weight="600">融資　$18B</text>
+<text x="0.0" y="690.0" class="m" font-size="12">9月にOracleが電力遅延で不可抗力を通知。融資の持ち分は額面割れで取引され、INGは一部を入札に出した。</text>
+<line x1="0" x2="1200" y1="702.0" y2="702.0" class="rule"/>
+<text x="0.0" y="722.0" class="rt" font-size="13.5" font-weight="700">Oracle向けDC（Abilene）</text>
+<rect x="625.0" y="732.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="754.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">Abilene</text>
+<text x="732.5" y="772.0" class="m" text-anchor="middle" font-size="11.5">Crusoe・Blue Owlの合弁</text>
+<rect x="300.0" y="739.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="755.0" class="itn" font-size="13" font-weight="600">Oracle</text>
+<text x="308.0" y="770.0" class="m" font-size="11">BBB−</text>
+<line x1="458.0" y1="758.0" x2="614.4" y2="758.0" class="ln c" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="622.0,758.0 613.0,763.0 613.0,753.0" class="hd c"/>
+<text x="465.0" y="752.3" class="lbl c warn" font-size="12" font-weight="600">リース</text>
+<rect x="0.0" y="739.0" width="140.0" height="38.0" rx="3" class="it"/>
+<text x="8.0" y="755.0" class="itn" font-size="13" font-weight="600">OpenAI</text>
+<line x1="143.0" y1="758.0" x2="289.4" y2="758.0" class="ln c" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="297.0,758.0 288.0,763.0 288.0,753.0" class="hd c"/>
+<text x="150.0" y="752.3" class="lbl c" font-size="12" font-weight="600">同上</text>
+<rect x="1005.0" y="739.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="755.0" class="itn" font-size="13" font-weight="600">JPMorgan</text>
+<line x1="1002.0" y1="758.0" x2="850.6" y2="758.0" class="ln d" stroke-width="1.6"/><polygon points="843.0,758.0 852.0,753.0 852.0,763.0" class="hd d"/>
+<text x="995.0" y="752.2" class="lbl d" text-anchor="end" font-size="12" font-weight="600">建設融資　$9.4B</text>
+<text x="0.0" y="806.0" class="m" font-size="12">Stargateの最初の拠点。</text>
+<line x1="0" x2="1200" y1="818.0" y2="818.0" class="rule"/>
+<text x="0.0" y="838.0" class="rt" font-size="13.5" font-weight="700">MetaのDC合弁（Hyperion・El Paso）</text>
+<rect x="625.0" y="910.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="932.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">Meta JV</text>
+<text x="732.5" y="950.0" class="m" text-anchor="middle" font-size="11.5">Hyperion・El Paso</text>
+<rect x="300.0" y="917.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="933.0" class="itn" font-size="13" font-weight="600">Meta</text>
+<text x="308.0" y="948.0" class="m" font-size="11">AA−</text>
+<line x1="458.0" y1="936.0" x2="614.4" y2="936.0" class="ln c" stroke-width="2.2"/><polygon points="622.0,936.0 613.0,941.0 613.0,931.0" class="hd c"/>
+<text x="465.0" y="929.9" class="lbl c" font-size="12" font-weight="600">$18.5B　賃料（計算値）</text>
+<rect x="1005.0" y="851.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="867.0" class="itn" font-size="13" font-weight="600">PIMCO</text>
+<rect x="1005.0" y="895.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="911.0" class="itn" font-size="13" font-weight="600">BlackRock</text>
+<rect x="1005.0" y="939.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="955.0" class="itn" font-size="13" font-weight="600">その他の投資家</text>
+<rect x="1005.0" y="983.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="999.0" class="itn" font-size="13" font-weight="600">Blue Owl</text>
+<text x="1013.0" y="1014.0" class="m" font-size="11">Hyperionの80%</text>
+<line x1="1002.0" y1="870.0" x2="850.4" y2="910.9" class="ln d" stroke-width="2.1"/><polygon points="843.0,912.9 850.4,905.7 853.0,915.4" class="hd d"/>
+<text x="995.0" y="863.9" class="lbl d" text-anchor="end" font-size="12" font-weight="600">社債　$18B</text>
+<line x1="1002.0" y1="914.0" x2="850.6" y2="927.6" class="ln d" stroke-width="1.6"/><polygon points="843.0,928.3 851.5,922.5 852.4,932.5" class="hd d"/>
+<text x="995.0" y="908.2" class="lbl d" text-anchor="end" font-size="12" font-weight="600">社債　$3B</text>
+<line x1="1002.0" y1="958.0" x2="850.6" y2="944.4" class="ln d" stroke-width="2.2"/><polygon points="843.0,943.7 852.4,939.5 851.5,949.5" class="hd d"/>
+<text x="995.0" y="951.9" class="lbl d" text-anchor="end" font-size="12" font-weight="600">社債　$18.6B</text>
+<line x1="1002.0" y1="1002.0" x2="850.4" y2="961.1" class="ln e" stroke-width="1.6"/><polygon points="843.0,959.1 853.0,956.6 850.4,966.3" class="hd e"/>
+<text x="995.0" y="996.2" class="lbl e" text-anchor="end" font-size="12" font-weight="600">出資　$2.5B</text>
+<rect x="625.0" y="986.0" width="215.0" height="40.0" rx="3" class="gb" stroke-dasharray="5 4"/>
+<text x="633.0" y="1003.0" class="itn g" font-size="12.5" font-weight="700">Meta</text>
+<text x="633.0" y="1018.0" class="lbl g" font-size="11.5">残価保証 $41.5B</text>
+<line x1="816.0" y1="985.0" x2="816.0" y2="971.6" class="ln g" stroke-width="3.2" stroke-dasharray="7 4"/><polygon points="816.0,964.0 821.0,973.0 811.0,973.0" class="hd g"/>
+<text x="808.0" y="978.0" class="lbl g" text-anchor="end" font-size="12" font-weight="700">肩代わり $41.5B</text>
+<text x="0.0" y="1046.0" class="m" font-size="12">Metaがリースを更新しないと残価保証が発動。Metaの最大損失は$68.4B（10-Q）。</text>
+<line x1="0" x2="1200" y1="1058.0" y2="1058.0" class="rule"/>
+<rect x="-6" y="1060.0" width="1212" height="214.0" class="band hlb"/>
+<text x="0.0" y="1078.0" class="rt" font-size="13.5" font-weight="700">CoreWeave</text>
+<rect x="625.0" y="1128.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="1150.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">CoreWeave</text>
+<text x="732.5" y="1168.0" class="m" text-anchor="middle" font-size="11.5">B+／債務$46.9B・手元$4.1B</text>
+<rect x="300.0" y="1091.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="1107.0" class="itn" font-size="13" font-weight="600">Meta</text>
+<text x="308.0" y="1122.0" class="m" font-size="11">〜2032年</text>
+<rect x="300.0" y="1135.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="1151.0" class="itn" font-size="13" font-weight="600">OpenAI</text>
+<text x="308.0" y="1166.0" class="m" font-size="11">〜2031年</text>
+<rect x="300.0" y="1179.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="1195.0" class="itn" font-size="13" font-weight="600">Anthropic</text>
+<text x="308.0" y="1210.0" class="m" font-size="11">2026年4月契約</text>
+<line x1="458.0" y1="1110.0" x2="614.5" y2="1137.3" class="ln c" stroke-width="3.0"/><polygon points="622.0,1138.6 612.3,1142.0 614.0,1132.1" class="hd c"/>
+<text x="465.0" y="1103.5" class="lbl c" font-size="12" font-weight="600">$35.2B</text>
+<line x1="458.0" y1="1154.0" x2="614.4" y2="1154.0" class="ln c" stroke-width="2.4"/><polygon points="622.0,1154.0 613.0,1159.0 613.0,1149.0" class="hd c"/>
+<text x="465.0" y="1147.8" class="lbl c" font-size="12" font-weight="600">$22.4B</text>
+<line x1="458.0" y1="1198.0" x2="614.5" y2="1170.7" class="ln c" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="622.0,1169.4 614.0,1175.9 612.3,1166.0" class="hd c"/>
+<text x="465.0" y="1192.3" class="lbl c warn" font-size="12" font-weight="600">金額非開示</text>
+<rect x="1005.0" y="1113.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="1129.0" class="itn" font-size="13" font-weight="600">Blackstone</text>
+<text x="1013.0" y="1144.0" class="m" font-size="11">DDTL 4.0・A3</text>
+<rect x="1005.0" y="1157.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="1173.0" class="itn" font-size="13" font-weight="600">社債・融資市場</text>
+<text x="1013.0" y="1188.0" class="m" font-size="11">その他の借入</text>
+<line x1="1002.0" y1="1132.0" x2="850.6" y2="1145.6" class="ln d" stroke-width="1.6"/><polygon points="843.0,1146.3 851.5,1140.5 852.4,1150.5" class="hd d"/>
+<text x="995.0" y="1126.2" class="lbl d" text-anchor="end" font-size="12" font-weight="600">融資　$8.5B</text>
+<line x1="1002.0" y1="1176.0" x2="850.6" y2="1162.4" class="ln d" stroke-width="3.1"/><polygon points="843.0,1161.7 852.4,1157.5 851.5,1167.5" class="hd d"/>
+<text x="995.0" y="1169.5" class="lbl d" text-anchor="end" font-size="12" font-weight="600">$38.4B</text>
+<rect x="625.0" y="1204.0" width="215.0" height="40.0" rx="3" class="gb" stroke-dasharray="5 4"/>
+<text x="633.0" y="1221.0" class="itn g" font-size="12.5" font-weight="700">NVIDIA</text>
+<text x="633.0" y="1236.0" class="lbl g" font-size="11.5">売れ残り買取 $6.3B</text>
+<line x1="816.0" y1="1203.0" x2="816.0" y2="1189.7" class="ln g" stroke-width="1.6" stroke-dasharray="7 4"/><polygon points="816.0,1182.0 821.0,1191.0 811.0,1191.0" class="hd g"/>
+<text x="808.0" y="1196.0" class="lbl g" text-anchor="end" font-size="12" font-weight="700">肩代わり $6.3B</text>
+<text x="0.0" y="1264.0" class="m" font-size="12">DDTL 4.0はMetaの契約が裏付け。Q3売上の30%と24%を2社（社名非開示）が占める。受注残$132.3B。</text>
+<line x1="0" x2="1200" y1="1276.0" y2="1276.0" class="rule"/>
+<rect x="-6" y="1278.0" width="1212" height="192.0" class="band hlb"/>
+<text x="0.0" y="1296.0" class="rt" font-size="13.5" font-weight="700">Nebius</text>
+<rect x="625.0" y="1346.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="1368.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">Nebius</text>
+<text x="732.5" y="1386.0" class="m" text-anchor="middle" font-size="11.5">債務$14.2B・手元$7.4B</text>
+<rect x="300.0" y="1309.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="1325.0" class="itn" font-size="13" font-weight="600">Microsoft</text>
+<text x="308.0" y="1340.0" class="m" font-size="11">5年・最大$19.4B</text>
+<rect x="300.0" y="1353.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="1369.0" class="itn" font-size="13" font-weight="600">Meta</text>
+<rect x="300.0" y="1397.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="1413.0" class="itn" font-size="13" font-weight="600">Anthropic</text>
+<line x1="458.0" y1="1328.0" x2="614.5" y2="1355.3" class="ln c" stroke-width="2.1"/><polygon points="622.0,1356.6 612.3,1360.0 614.0,1350.1" class="hd c"/>
+<text x="465.0" y="1322.0" class="lbl c" font-size="12" font-weight="600">$17.4B</text>
+<line x1="458.0" y1="1372.0" x2="614.4" y2="1372.0" class="ln c" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="622.0,1372.0 613.0,1377.0 613.0,1367.0" class="hd c"/>
+<text x="465.0" y="1366.3" class="lbl c warn" font-size="12" font-weight="600">金額非開示</text>
+<text x="469.0" y="1420.0" class="warn" font-size="12" font-weight="600">契約は確認できず</text>
+<rect x="1005.0" y="1331.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="1347.0" class="itn" font-size="13" font-weight="600">Citi</text>
+<text x="1013.0" y="1362.0" class="m" font-size="11">10月</text>
+<rect x="1005.0" y="1375.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="1391.0" class="itn" font-size="13" font-weight="600">転換社債</text>
+<text x="1013.0" y="1406.0" class="m" font-size="11">1〜9月</text>
+<line x1="1002.0" y1="1350.0" x2="850.6" y2="1363.6" class="ln d" stroke-width="1.6"/><polygon points="843.0,1364.3 851.5,1358.5 852.4,1368.5" class="hd d"/>
+<text x="995.0" y="1344.2" class="lbl d" text-anchor="end" font-size="12" font-weight="600">担保付き　$3.5B</text>
+<line x1="1002.0" y1="1394.0" x2="850.6" y2="1380.4" class="ln d" stroke-width="1.6"/><polygon points="843.0,1379.7 852.4,1375.5 851.5,1385.5" class="hd d"/>
+<text x="995.0" y="1388.2" class="lbl d" text-anchor="end" font-size="12" font-weight="600">$10.1B</text>
+<text x="0.0" y="1460.0" class="m" font-size="12">受注残$38.7B。New Jersey拠点の一部は2027年4〜6月に遅延。Microsoft契約は納入遅延で解約され得る。</text>
+<line x1="0" x2="1200" y1="1472.0" y2="1472.0" class="rule"/>
+<text x="0.0" y="1492.0" class="rt" font-size="13.5" font-weight="700">Nscale</text>
+<rect x="625.0" y="1520.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="1542.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">Nscale</text>
+<text x="732.5" y="1560.0" class="m" text-anchor="middle" font-size="11.5">格付けなし</text>
+<rect x="300.0" y="1505.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="1521.0" class="itn" font-size="13" font-weight="600">Microsoft</text>
+<text x="308.0" y="1536.0" class="m" font-size="11">〜2033年</text>
+<rect x="300.0" y="1549.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="1565.0" class="itn" font-size="13" font-weight="600">Anthropic</text>
+<text x="308.0" y="1580.0" class="m" font-size="11">〜2033年・上限</text>
+<line x1="458.0" y1="1524.0" x2="614.4" y2="1537.6" class="ln c" stroke-width="3.3"/><polygon points="622.0,1538.3 612.6,1542.5 613.5,1532.5" class="hd c"/>
+<text x="465.0" y="1517.3" class="lbl c" font-size="12" font-weight="600">$43.8B</text>
+<line x1="458.0" y1="1568.0" x2="614.4" y2="1554.4" class="ln c" stroke-width="3.3"/><polygon points="622.0,1553.7 613.5,1559.5 612.6,1549.5" class="hd c"/>
+<text x="465.0" y="1561.3" class="lbl c" font-size="12" font-weight="600">$44.6B</text>
+<text x="1005.0" y="1550.0" class="m" font-size="12">資金の出し手は非開示</text>
+<text x="0.0" y="1612.0" class="m" font-size="12">どちらの契約も提供が前提で、遅延すると解約できる。</text>
+<line x1="0" x2="1200" y1="1624.0" y2="1624.0" class="rule"/>
+<text x="0.0" y="1644.0" class="rt" font-size="13.5" font-weight="700">Fluidstackの拠点（TeraWulf・Cipher）</text>
+<rect x="625.0" y="1654.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="1676.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">TeraWulf・Cipher</text>
+<text x="732.5" y="1694.0" class="m" text-anchor="middle" font-size="11.5">DCの大家</text>
+<rect x="300.0" y="1661.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="1677.0" class="itn" font-size="13" font-weight="600">Fluidstack</text>
+<text x="308.0" y="1692.0" class="m" font-size="11">格付けなし</text>
+<line x1="458.0" y1="1680.0" x2="614.4" y2="1680.0" class="ln c" stroke-width="1.6"/><polygon points="622.0,1680.0 613.0,1685.0 613.0,1675.0" class="hd c"/>
+<text x="465.0" y="1674.2" class="lbl c" font-size="12" font-weight="600">$9.7B　10年</text>
+<rect x="0.0" y="1661.0" width="140.0" height="38.0" rx="3" class="it"/>
+<text x="8.0" y="1677.0" class="itn" font-size="13" font-weight="600">Anthropic</text>
+<line x1="143.0" y1="1680.0" x2="289.4" y2="1680.0" class="ln c" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="297.0,1680.0 288.0,1685.0 288.0,1675.0" class="hd c"/>
+<text x="150.0" y="1674.3" class="lbl c" font-size="12" font-weight="600">コロケーション契約</text>
+<rect x="625.0" y="1730.0" width="215.0" height="40.0" rx="3" class="gb" stroke-dasharray="5 4"/>
+<text x="633.0" y="1747.0" class="itn g" font-size="12.5" font-weight="700">Alphabet</text>
+<text x="633.0" y="1762.0" class="lbl g" font-size="11.5">保証 $3.2B＋$1.4B</text>
+<line x1="816.0" y1="1729.0" x2="816.0" y2="1715.7" class="ln g" stroke-width="1.6" stroke-dasharray="7 4"/><polygon points="816.0,1708.0 821.0,1717.0 811.0,1717.0" class="hd g"/>
+<text x="808.0" y="1722.0" class="lbl g" text-anchor="end" font-size="12" font-weight="700">肩代わり $4.6B</text>
+<text x="0.0" y="1790.0" class="m" font-size="12">Googleは保証の見返りにワラントで約14%と約5.4%を取得。Anthropicの契約とこの2拠点の対応は未確認。</text>
+<line x1="0" x2="1200" y1="1802.0" y2="1802.0" class="rule"/>
+<text x="0.0" y="1822.0" class="rt" font-size="13.5" font-weight="700">SpaceXのGPUリース（Valor VCI）</text>
+<rect x="625.0" y="1850.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="1872.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">Valor VCI</text>
+<text x="732.5" y="1890.0" class="m" text-anchor="middle" font-size="11.5">GPUリースSPV</text>
+<rect x="300.0" y="1857.0" width="155.0" height="38.0" rx="3" class="it"/>
+<text x="308.0" y="1873.0" class="itn" font-size="13" font-weight="600">SpaceX/xAI</text>
+<text x="308.0" y="1888.0" class="m" font-size="11">BBB</text>
+<line x1="458.0" y1="1876.0" x2="614.4" y2="1876.0" class="ln c" stroke-width="1.6"/><polygon points="622.0,1876.0 613.0,1881.0 613.0,1871.0" class="hd c"/>
+<text x="465.0" y="1870.2" class="lbl c" font-size="12" font-weight="600">$5.4B　5年</text>
+<rect x="0.0" y="1857.0" width="140.0" height="38.0" rx="3" class="it"/>
+<text x="8.0" y="1873.0" class="itn" font-size="13" font-weight="600">Anthropic</text>
+<line x1="143.0" y1="1876.0" x2="289.1" y2="1876.0" class="ln c" stroke-width="5.5" stroke-dasharray="2 5"/><polygon points="297.0,1876.0 287.7,1882.3 287.7,1869.7" class="hd c"/>
+<text x="150.0" y="1868.3" class="lbl c" font-size="12" font-weight="600">$120.5B　解約可</text>
+<rect x="1005.0" y="1835.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="1851.0" class="itn" font-size="13" font-weight="600">Apollo</text>
+<text x="1013.0" y="1866.0" class="m" font-size="11">第1順位</text>
+<rect x="1005.0" y="1879.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="1895.0" class="itn" font-size="13" font-weight="600">NVIDIA</text>
+<text x="1013.0" y="1910.0" class="m" font-size="11">アンカー投資家</text>
+<line x1="1002.0" y1="1854.0" x2="850.6" y2="1867.6" class="ln d" stroke-width="1.6"/><polygon points="843.0,1868.3 851.5,1862.5 852.4,1872.5" class="hd d"/>
+<text x="995.0" y="1848.2" class="lbl d" text-anchor="end" font-size="12" font-weight="600">融資　$3.5B</text>
+<line x1="1002.0" y1="1898.0" x2="850.6" y2="1884.4" class="ln e" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="843.0,1883.7 852.4,1879.5 851.5,1889.5" class="hd e"/>
+<text x="995.0" y="1892.3" class="lbl e" text-anchor="end" font-size="12" font-weight="600">出資　非開示</text>
+<rect x="625.0" y="1926.0" width="215.0" height="40.0" rx="3" class="gb" stroke-dasharray="5 4"/>
+<text x="633.0" y="1943.0" class="itn g" font-size="12.5" font-weight="700">SpaceX</text>
+<text x="633.0" y="1958.0" class="lbl g" font-size="11.5">リース料を保証</text>
+<line x1="816.0" y1="1925.0" x2="816.0" y2="1911.7" class="ln g" stroke-width="1.4" stroke-dasharray="7 4"/><polygon points="816.0,1904.0 821.0,1913.0 811.0,1913.0" class="hd g"/>
+<text x="808.0" y="1918.0" class="lbl g" text-anchor="end" font-size="12" font-weight="700">肩代わり</text>
+<text x="0.0" y="1986.0" class="m" font-size="12">VCIは借りた資金でNVIDIAからGPU $5.4Bを買う。SpaceXのQ3売上の34.5%を占める顧客はAnthropicと報道。</text>
+<line x1="0" x2="1200" y1="1998.0" y2="1998.0" class="rule"/>
+<text x="0.0" y="2018.0" class="rt" font-size="13.5" font-weight="700">NVIDIAの買取・保証</text>
+<rect x="625.0" y="2028.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="2050.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">AIクラウド各社</text>
+<text x="732.5" y="2068.0" class="m" text-anchor="middle" font-size="11.5">相手は非開示</text>
+<rect x="625.0" y="2104.0" width="215.0" height="40.0" rx="3" class="gb" stroke-dasharray="5 4"/>
+<text x="633.0" y="2121.0" class="itn g" font-size="12.5" font-weight="700">NVIDIA</text>
+<text x="633.0" y="2136.0" class="lbl g" font-size="11.5">買取$36B・リース$20B・保証$3.5B</text>
+<line x1="816.0" y1="2103.0" x2="816.0" y2="2089.7" class="ln g" stroke-width="3.9" stroke-dasharray="7 4"/><polygon points="816.0,2082.0 821.0,2091.0 811.0,2091.0" class="hd g"/>
+<text x="808.0" y="2096.0" class="lbl g" text-anchor="end" font-size="12" font-weight="700">肩代わり $59.5B</text>
+<text x="0.0" y="2164.0" class="m" font-size="12">買取は第三者が使えば減り、需要が消えた時に満額になる。保証分は相手が$712Mをエスクロー。</text>
+<line x1="0" x2="1200" y1="2176.0" y2="2176.0" class="rule"/>
+<text x="0.0" y="2196.0" class="rt" font-size="13.5" font-weight="700">Alphabetの保証</text>
+<rect x="625.0" y="2206.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="2228.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">DC・電力の相手先</text>
+<text x="732.5" y="2246.0" class="m" text-anchor="middle" font-size="11.5">相手は非開示</text>
+<rect x="625.0" y="2282.0" width="215.0" height="40.0" rx="3" class="gb" stroke-dasharray="5 4"/>
+<text x="633.0" y="2299.0" class="itn g" font-size="12.5" font-weight="700">Alphabet</text>
+<text x="633.0" y="2314.0" class="lbl g" font-size="11.5">$43.4B＋将来$17.7B＋電力$22.8B＋$10B</text>
+<line x1="816.0" y1="2281.0" x2="816.0" y2="2267.7" class="ln g" stroke-width="4.8" stroke-dasharray="7 4"/><polygon points="816.0,2260.0 821.6,2269.0 810.4,2269.0" class="hd g"/>
+<text x="808.0" y="2274.0" class="lbl g" text-anchor="end" font-size="12" font-weight="700">肩代わり $93.9B</text>
+<text x="0.0" y="2342.0" class="m" font-size="12">実行済みの保証は$48.0B（TeraWulf・Cipherを含む）。将来分$27.7B（Cruxを含む）。</text>
+<line x1="0" x2="1200" y1="2354.0" y2="2354.0" class="rule"/>
+<text x="0.0" y="2374.0" class="rt" font-size="13.5" font-weight="700">AMDの保証（Crusoe）</text>
+<rect x="625.0" y="2384.0" width="215.0" height="52.0" rx="3" class="sup"/>
+<text x="732.5" y="2406.0" class="supn" text-anchor="middle" font-size="14.5" font-weight="700">Crusoe</text>
+<text x="732.5" y="2424.0" class="m" text-anchor="middle" font-size="11.5">格付けなし</text>
+<rect x="1005.0" y="2391.0" width="195.0" height="38.0" rx="3" class="it"/>
+<text x="1013.0" y="2407.0" class="itn" font-size="13" font-weight="600">Goldman Sachs</text>
+<line x1="1002.0" y1="2410.0" x2="850.6" y2="2410.0" class="ln d" stroke-width="1.6"/><polygon points="843.0,2410.0 852.0,2405.0 852.0,2415.0" class="hd d"/>
+<text x="995.0" y="2404.2" class="lbl d" text-anchor="end" font-size="12" font-weight="600">融資　$0.3B</text>
+<rect x="625.0" y="2460.0" width="215.0" height="40.0" rx="3" class="gb" stroke-dasharray="5 4"/>
+<text x="633.0" y="2477.0" class="itn g" font-size="12.5" font-weight="700">AMD</text>
+<text x="633.0" y="2492.0" class="lbl g" font-size="11.5">実質保証 $0.3B</text>
+<line x1="816.0" y1="2459.0" x2="816.0" y2="2445.7" class="ln g" stroke-width="1.6" stroke-dasharray="7 4"/><polygon points="816.0,2438.0 821.0,2447.0 811.0,2447.0" class="hd g"/>
+<text x="808.0" y="2452.0" class="lbl g" text-anchor="end" font-size="12" font-weight="700">肩代わり $0.3B</text>
+<text x="0.0" y="2520.0" class="m" font-size="12">顧客が付かなければAMD自身がチップを借りる。</text>
+<line x1="0" x2="1200" y1="2532.0" y2="2532.0" class="rule"/>
+<text x="0.0" y="2554.0" class="m" font-size="12">青＝払う約束（家賃・利用料）　茶＝融資　緑＝出資　赤の破線＝借り手が払えない時に保証人が払う向き　破線の矢印＝金額非開示。</text></svg></figure>
+</section>
+
+<section class="sec">
+  <div class="two">
+    <div class="sec">
+      <header><h2>図3　Anthropicの約束の内訳</h2><p class="sub">11月17日のS-1/A第3次訂正から。色付きの行が、ご質問のCoreWeaveとNebiusです。</p></header>
+      <figure class="fw"><svg viewBox="0 0 1160 603" class="fig" role="img" aria-label="Anthropicの計算資源の約束$900.9Bの内訳">
+<text x="250.0" y="24.0" class="h" text-anchor="end" font-size="13" font-weight="600">相手先</text>
+<text x="262.0" y="24.0" class="h" font-size="13" font-weight="600">約束額（$B）</text>
+<text x="820.0" y="24.0" class="h" font-size="13" font-weight="600">条件</text>
+<line x1="262.0" x2="262.0" y1="40" y2="505" class="grid"/>
+<text x="262.0" y="521.0" class="m" text-anchor="middle" font-size="11">0</text>
+<line x1="407.5" x2="407.5" y1="40" y2="505" class="grid"/>
+<text x="407.5" y="521.0" class="m" text-anchor="middle" font-size="11">50</text>
+<line x1="552.9" x2="552.9" y1="40" y2="505" class="grid"/>
+<text x="552.9" y="521.0" class="m" text-anchor="middle" font-size="11">100</text>
+<line x1="698.4" x2="698.4" y1="40" y2="505" class="grid"/>
+<text x="698.4" y="521.0" class="m" text-anchor="middle" font-size="11">150</text>
+<text x="250.0" y="61.0" class="itn" text-anchor="end" font-size="13" font-weight="600">Broadcom（SPV経由のTPUリース）</text>
+<rect x="262.0" y="48.0" width="468.9" height="17" class="bar firm"/>
+<text x="736.9" y="61.0" class="lbl" font-size="12" font-weight="600">$161.2B</text>
+<text x="820.0" y="61.0" class="m" font-size="12">解約不可・親会社保証</text>
+<text x="250.0" y="92.0" class="itn" text-anchor="end" font-size="13" font-weight="600">Google</text>
+<rect x="262.0" y="79.0" width="352.9" height="17" class="bar firm"/>
+<text x="620.9" y="92.0" class="lbl" font-size="12" font-weight="600">$121.3B</text>
+<text x="820.0" y="92.0" class="m" font-size="12">利用量にかかわらず支払い・〜2033年7月</text>
+<text x="250.0" y="123.0" class="itn" text-anchor="end" font-size="13" font-weight="600">SpaceX/xAI</text>
+<rect x="262.0" y="110.0" width="350.5" height="17" class="bar soft"/>
+<text x="618.5" y="123.0" class="lbl" font-size="12" font-weight="600">$120.5B</text>
+<text x="820.0" y="123.0" class="m" font-size="12">2027年1〜3月以降は90日前通知で解約可</text>
+<text x="250.0" y="154.0" class="itn" text-anchor="end" font-size="13" font-weight="600">Amazon</text>
+<rect x="262.0" y="141.0" width="320.0" height="17" class="bar firm"/>
+<text x="588.0" y="154.0" class="lbl" font-size="12" font-weight="600">$110B</text>
+<text x="820.0" y="154.0" class="m" font-size="12">利用量にかかわらず支払い・〜2036年4月</text>
+<text x="250.0" y="185.0" class="itn" text-anchor="end" font-size="13" font-weight="600">Microsoft</text>
+<rect x="262.0" y="172.0" width="137.3" height="17" class="bar firm"/>
+<text x="405.3" y="185.0" class="lbl" font-size="12" font-weight="600">$47.2B</text>
+<text x="820.0" y="185.0" class="m" font-size="12">利用量にかかわらず支払い・最大$49.2B</text>
+<text x="250.0" y="216.0" class="itn" text-anchor="end" font-size="13" font-weight="600">Nscale</text>
+<rect x="262.0" y="203.0" width="129.7" height="17" class="bar soft"/>
+<text x="397.7" y="216.0" class="lbl" font-size="12" font-weight="600">$44.6B</text>
+<text x="820.0" y="216.0" class="m" font-size="12">提供分だけ支払い・遅延時は解約可</text>
+<text x="250.0" y="247.0" class="itn" text-anchor="end" font-size="13" font-weight="600">Lambda</text>
+<rect x="262.0" y="234.0" width="120.1" height="17" class="bar soft"/>
+<text x="388.1" y="247.0" class="lbl" font-size="12" font-weight="600">$41.3B</text>
+<text x="820.0" y="247.0" class="m" font-size="12">うち$34.9Bは現在どちらからも解約可</text>
+<text x="250.0" y="278.0" class="itn" text-anchor="end" font-size="13" font-weight="600">AMD</text>
+<rect x="262.0" y="265.0" width="58.2" height="17" class="bar firm"/>
+<text x="326.2" y="278.0" class="lbl" font-size="12" font-weight="600">$20B</text>
+<text x="820.0" y="278.0" class="m" font-size="12">$20B超・解約不可</text>
+<text x="250.0" y="309.0" class="itn" text-anchor="end" font-size="13" font-weight="600">短期契約の相手（非開示）</text>
+<rect x="262.0" y="296.0" width="50.6" height="17" class="bar firm"/>
+<text x="318.6" y="309.0" class="lbl" font-size="12" font-weight="600">$17.4B</text>
+<text x="820.0" y="309.0" class="m" font-size="12">9月末の最低支払額・複数年より割高</text>
+<text x="250.0" y="340.0" class="itn" text-anchor="end" font-size="13" font-weight="600">Rumble</text>
+<rect x="262.0" y="327.0" width="39.9" height="17" class="bar rep"/>
+<text x="307.9" y="340.0" class="lbl" font-size="12" font-weight="600">$13.7B</text>
+<text x="820.0" y="340.0" class="m" font-size="12">報道のみ・両社とも未確認</text>
+<text x="250.0" y="371.0" class="itn" text-anchor="end" font-size="13" font-weight="600">Meta</text>
+<rect x="262.0" y="358.0" width="29.1" height="17" class="bar rep"/>
+<text x="297.1" y="371.0" class="lbl" font-size="12" font-weight="600">$10B</text>
+<text x="820.0" y="371.0" class="m" font-size="12">7月に協議と報道・最大$10B・2年</text>
+<rect x="0" y="383.0" width="1160" height="29" class="band hlb"/>
+<text x="250.0" y="402.0" class="itn" text-anchor="end" font-size="13" font-weight="600">CoreWeave</text>
+<text x="266.0" y="402.0" class="warn" font-size="12.5" font-weight="600">金額非開示</text>
+<text x="820.0" y="402.0" class="warn" font-size="12">4月に複数年契約・金額非開示・S-1/Aに社名なし</text>
+<rect x="0" y="414.0" width="1160" height="29" class="band hlb"/>
+<text x="250.0" y="433.0" class="itn" text-anchor="end" font-size="13" font-weight="600">Nebius</text>
+<text x="266.0" y="433.0" class="warn" font-size="12.5" font-weight="600">—</text>
+<text x="820.0" y="433.0" class="warn" font-size="12">契約は確認できず（11/12の決算資料に記載なし）</text>
+<text x="250.0" y="464.0" class="itn" text-anchor="end" font-size="13" font-weight="600">Fluidstack</text>
+<text x="266.0" y="464.0" class="warn" font-size="12.5" font-weight="600">金額非開示</text>
+<text x="820.0" y="464.0" class="warn" font-size="12">コロケーション・運営契約。金額非開示</text>
+<text x="250.0" y="495.0" class="itn" text-anchor="end" font-size="13" font-weight="600">Google TPUの追加分</text>
+<rect x="625.6" y="482.0" width="72.7" height="17" class="bar rng"/>
+<text x="704.4" y="495.0" class="lbl" font-size="12" font-weight="600">$125〜150B</text>
+<text x="820.0" y="495.0" class="m" font-size="12">$125〜150B・2028〜31年提供。契約債務表の外</text>
+<rect x="0" y="534" width="22" height="13" class="bar firm"/>
+<text x="30.0" y="545.0" class="m" font-size="12">解約できない・利用量にかかわらず支払う</text>
+<rect x="280" y="534" width="22" height="13" class="bar soft"/>
+<text x="310.0" y="545.0" class="m" font-size="12">解約できる・提供が前提</text>
+<rect x="560" y="534" width="22" height="13" class="bar rep"/>
+<text x="590.0" y="545.0" class="m" font-size="12">報道のみ</text>
+<rect x="840" y="534" width="22" height="13" class="bar rng"/>
+<text x="870.0" y="545.0" class="m" font-size="12">金額未確定</text>
+<text x="0.0" y="571.0" class="m" font-size="12">総額$900.9B（9月末とその後の契約）。うち12か月以内$70.7B、2030年末まで$451.6B。名前と金額が分かる開示分の合計は$683.5B（Rumble・Metaを除く）で、残り約$217Bは相手先が分かりません。</text>
+</svg></figure>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <header><h2>図4　信用力の地図</h2><p class="sub">縦が格付け、横が1年あたりのフリーキャッシュフロー（本業の現金収入から設備投資を引いた残り）。点の色は判定です。左下ほど、外からの資金が止まった時に苦しくなります。</p></header>
+  <figure class="fw"><svg viewBox="0 0 1100 580" class="fig" role="img" aria-label="格付けとフリーキャッシュフローの散布図">
+<rect x="170" y="363.0" width="900" height="92.0" class="spec"/>
+<text x="1064.0" y="379.0" class="warn" text-anchor="end" font-size="12" font-weight="600">投機的等級</text>
+<line x1="170.0" x2="170.0" y1="40" y2="498.0" class="grid"/>
+<text x="170.0" y="518.0" class="m" text-anchor="middle" font-size="11.5">-50</text>
+<line x1="282.5" x2="282.5" y1="40" y2="498.0" class="grid"/>
+<text x="282.5" y="518.0" class="m" text-anchor="middle" font-size="11.5">-25</text>
+<line x1="395.0" x2="395.0" y1="40" y2="498.0" class="zero"/>
+<text x="395.0" y="518.0" class="m" text-anchor="middle" font-size="11.5">0</text>
+<line x1="507.5" x2="507.5" y1="40" y2="498.0" class="grid"/>
+<text x="507.5" y="518.0" class="m" text-anchor="middle" font-size="11.5">+25</text>
+<line x1="620.0" x2="620.0" y1="40" y2="498.0" class="grid"/>
+<text x="620.0" y="518.0" class="m" text-anchor="middle" font-size="11.5">+50</text>
+<line x1="732.5" x2="732.5" y1="40" y2="498.0" class="grid"/>
+<text x="732.5" y="518.0" class="m" text-anchor="middle" font-size="11.5">+75</text>
+<line x1="845.0" x2="845.0" y1="40" y2="498.0" class="grid"/>
+<text x="845.0" y="518.0" class="m" text-anchor="middle" font-size="11.5">+100</text>
+<line x1="957.5" x2="957.5" y1="40" y2="498.0" class="grid"/>
+<text x="957.5" y="518.0" class="m" text-anchor="middle" font-size="11.5">+125</text>
+<line x1="1070.0" x2="1070.0" y1="40" y2="498.0" class="grid"/>
+<text x="1070.0" y="518.0" class="m" text-anchor="middle" font-size="11.5">+150</text>
+<text x="620.0" y="542.0" class="h" text-anchor="middle" font-size="12.5" font-weight="600">FCFの年率（$B）　左ほど現金が出ていく</text>
+<text x="156.0" y="68.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">AAA</text>
+<line x1="170" x2="1070" y1="64.0" y2="64.0" class="grid"/>
+<text x="156.0" y="114.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">AA+</text>
+<line x1="170" x2="1070" y1="110.0" y2="110.0" class="grid"/>
+<text x="156.0" y="160.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">AA</text>
+<line x1="170" x2="1070" y1="156.0" y2="156.0" class="grid"/>
+<text x="156.0" y="206.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">AA−</text>
+<line x1="170" x2="1070" y1="202.0" y2="202.0" class="grid"/>
+<text x="156.0" y="252.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">格付け未確認</text>
+<line x1="170" x2="1070" y1="248.0" y2="248.0" class="grid"/>
+<text x="156.0" y="298.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">BBB</text>
+<line x1="170" x2="1070" y1="294.0" y2="294.0" class="grid"/>
+<text x="156.0" y="344.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">BBB−</text>
+<line x1="170" x2="1070" y1="340.0" y2="340.0" class="grid"/>
+<text x="156.0" y="390.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">BB+</text>
+<line x1="170" x2="1070" y1="386.0" y2="386.0" class="grid"/>
+<text x="156.0" y="436.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">B+</text>
+<line x1="170" x2="1070" y1="432.0" y2="432.0" class="grid"/>
+<text x="156.0" y="482.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">格付けなし</text>
+<line x1="170" x2="1070" y1="478.0" y2="478.0" class="grid"/>
+<circle cx="730.2" cy="64.0" r="7" class="pt t1"/>
+<text x="742.2" y="68.0" class="itn" font-size="12.5" font-weight="600">Microsoft　+74.5</text>
+<circle cx="483.7" cy="110.0" r="7" class="pt t2"/>
+<text x="495.7" y="114.0" class="itn" font-size="12.5" font-weight="600">Alphabet　+19.7</text>
+<circle cx="204.2" cy="156.0" r="7" class="pt t2"/>
+<text x="216.2" y="160.0" class="itn" font-size="12.5" font-weight="600">Amazon　-42.4</text>
+<circle cx="1024.1" cy="194.0" r="7" class="pt t1"/>
+<text x="1012.1" y="198.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">NVIDIA　+139.8</text>
+<circle cx="461.2" cy="210.0" r="7" class="pt t2"/>
+<text x="473.2" y="214.0" class="itn" font-size="12.5" font-weight="600">Meta　+14.7</text>
+<circle cx="641.1" cy="248.0" r="7" class="pt t1"/>
+<text x="653.1" y="252.0" class="itn" font-size="12.5" font-weight="600">Broadcom　+54.7</text>
+<circle cx="404.9" cy="248.0" r="7" class="pt t1"/>
+<text x="416.9" y="252.0" class="itn" font-size="12.5" font-weight="600">AMD　+2.2</text>
+<circle cx="215.0" cy="294.0" r="7" class="pt t2"/>
+<text x="227.0" y="298.0" class="itn" font-size="12.5" font-weight="600">SpaceX/xAI　-40.0</text>
+<circle cx="265.9" cy="340.0" r="7" class="pt t3"/>
+<text x="277.9" y="344.0" class="itn" font-size="12.5" font-weight="600">Oracle　-28.7</text>
+<circle cx="395.0" cy="386.0" r="7" class="pt hollow t3"/>
+<text x="407.0" y="390.0" class="itn" font-size="12.5" font-weight="600">ソフトバンクG（FCF非開示）</text>
+<circle cx="287.4" cy="432.0" r="7" class="pt t5"/>
+<text x="299.4" y="436.0" class="itn" font-size="12.5" font-weight="600">CoreWeave　-23.9</text>
+<circle cx="426.0" cy="469.0" r="7" class="pt t4"/>
+<text x="438.0" y="473.0" class="itn" font-size="12.5" font-weight="600">Anthropic　+6.9</text>
+<circle cx="328.4" cy="469.0" r="7" class="pt t4"/>
+<text x="316.4" y="473.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">OpenAI　-14.8</text>
+<circle cx="328.0" cy="487.0" r="7" class="pt t5"/>
+<text x="316.0" y="491.0" class="itn" text-anchor="end" font-size="12.5" font-weight="600">Nebius　-14.9</text>
+<text x="0.0" y="554.0" class="m" font-size="11.5">FCFの期間：直近12か月（Alphabet・Amazon・Oracle）、直近四半期×4（Microsoft・Broadcom・AMD・SpaceX）、上半期×2（NVIDIA・Anthropic）、</text>
+<text x="0.0" y="572.0" class="m" font-size="11.5">9か月×4/3（CoreWeave・Nebius）、1〜3月期×4（OpenAI、営業損失で代用）。Broadcom・AMDは格付けの水準を確認できていません。</text>
+</svg></figure>
+</section>
+
+<section class="sec">
+  <div class="two">
+    <div class="sec">
+      <header><h2>ネオクラウドが焦げついた時の順路</h2></header>
+      <ol class="chain">
+        <li><strong>新規の資金が止まる</strong><span>CoreWeaveは2026年の設備投資$37〜39Bに対し、手元は$4.1B。10〜12月期の支払利息は$1.05〜1.15Bの見通しです。会社は2027年まで親会社での無担保社債は出さないとしていますが、案件ごとの融資（DDTL）に頼る形は変わりません。</span></li>
+        <li><strong>GPU融資の担保が弱る</strong><span>DDTL 4.0が高格付けなのはMetaの契約が裏にあるからです。契約の支払いは提供が前提で、遅延すれば顧客は降りられます。NebiusはNew Jersey拠点の一部が2027年4〜6月にずれ込みました。</span></li>
+        <li><strong>建物の大家と保証人に届く</strong><span>Googleは借り手が倒れるとFluidstackのリースを引き受けます（TeraWulf・Cipher計$4.6B、実行済み全体$48.0B）。NVIDIAは$3.5Bの土地・電力・建屋保証と、$36Bのクラウド買い取り約束を持ちます。</span></li>
+        <li><strong>GPUの再販価格が保証額を決める</strong><span>Broadcomの負担は、リース残高の85%からラック売却額を引いた差額です。中古GPUが値崩れするほど支払いが増えます。</span></li>
+        <li><strong>銀行と投資家の値洗いが始まる</strong><span>Project Jupiterの$18B融資は89〜91セントで気配が出ており、INGは持ち分を入札に出しました。</span></li>
+        <li><strong>ラボまで波及すると桁が変わる</strong><span>Oracleの受注残の約半分、SB Energyの受注残の大半、NVIDIAの$105B保証がOpenAIに結びつきます。Anthropicの約束$900.9Bのうち、利用量にかかわらず払う形のもの（Broadcom・Google・Amazon・Microsoft）が約$440Bあり、収入が想定を下回るとこの4社の受注残が先に問われます。</span></li>
+      </ol>
+    </div>
+    <div class="sec">
+      <header><h2>GFCと比べると</h2></header>
+      <div class="tb"><table>
+        <tr><th></th><th>2008年</th><th>今回</th></tr>
+        <tr><td>焦げつく元</td><td>サブプライム住宅ローン</td><td>AIラボの収入と、GPUの残存価値</td></tr>
+        <tr><td>中間の箱</td><td>CDO、SIV</td><td>SPV、DDTL、ジョイントベンチャー</td></tr>
+        <tr><td>保証人</td><td>モノライン、AIG</td><td>NVIDIA、Google、Broadcom、Meta</td></tr>
+        <tr><td>保証人の弱点</td><td>資本不足</td><td>保証先が自社の顧客で、悪化時に売上と保証が同時に悪くなる（IMFのいう逆方向リスク）</td></tr>
+        <tr><td>期間のずれ</td><td>短期CPで長期資産</td><td>建設融資2〜5年、GPU4〜6年、リース15〜20年</td></tr>
+        <tr><td>値洗いの指標</td><td>ABX指数</td><td>CoreWeave・Oracle・SBGのCDS、融資の入札価格</td></tr>
+        <tr><td>今回の方が良い点</td><td></td><td>保証人が巨額の黒字。建物と電力は実物が残る。Anthropicは手元$131.9BとIPO資金を持つ</td></tr>
+        <tr><td>まだ見えない点</td><td></td><td>同じ担保の再証券化の深さ、銀行・保険の個社別保有額、Anthropicの約束の相手先非開示分（約$217B）</td></tr>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <header><h2>各社の信用力</h2><p class="sub">単位は十億ドル。手元資金は現金と短期の有価証券です。判定は格付け・FCF・約束の重さ・市場の値動きを見た私の評価です。</p></header>
+  <div class="tb"><table><thead><tr><th>企業</th><th>判定</th><th>格付け</th><th>市場の状況</th><th class="r">売上</th><th class="r">純利益</th><th class="r">FCF</th><th class="r">FCF年率</th><th class="r">手元資金</th><th class="r">負債</th><th class="r">手元÷負債</th><th class="r">未開始リース</th><th class="r">肩代わり</th><th class="r">約束・受注残</th><th>基準日</th><th>出典</th></tr></thead><tbody><tr><td class="nm">NVIDIA</td><td><span class="pill t1">厚い</span></td><td>S&amp;P AA−（ポジティブ）／他は未確認</td><td>CDSが10月に過去最高</td><td class="r">96.2<br><small>Q2 FY27</small></td><td class="r ">59.7</td><td class="r ">69.9<br><small>上半期</small></td><td class="r ">139.8</td><td class="r">56.6</td><td class="r">33.4</td><td class="r">1.69倍</td><td class="r">45.0</td><td class="r">108.5</td><td class="r">344.0</td><td>26/7/26</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm" target="_blank" rel="noopener">NVIDIA Form 10-Q（2026/7/26）</a></td></tr><tr><td class="nm">Microsoft</td><td><span class="pill t1">厚い</span></td><td>AAA／Aaa</td><td>未開始リースが手元の5.7倍</td><td class="r">92.3<br><small>Q1 FY27</small></td><td class="r ">36.6</td><td class="r ">18.6<br><small>四半期</small></td><td class="r ">74.5</td><td class="r">64.5</td><td class="r">35.5</td><td class="r">1.82倍</td><td class="r">364.6</td><td class="r">—</td><td class="r">—</td><td>26/9/30</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0000789019/000119312526436122/msft-ex99_1.htm" target="_blank" rel="noopener">Microsoft 決算リリース FY27 Q1</a></td></tr><tr><td class="nm">Alphabet</td><td><span class="pill t1">厚い</span></td><td>S&amp;P AA+／Moody&#x27;s Aa2</td><td>FCFが2四半期連続で赤字</td><td class="r">127.6<br><small>Q3</small></td><td class="r ">26.2</td><td class="r ">19.7<br><small>12か月</small></td><td class="r ">19.7</td><td class="r">265.1</td><td class="r">125.1</td><td class="r">2.12倍</td><td class="r">130.5</td><td class="r">98.5</td><td class="r">924.4</td><td>26/9/30</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001652044/000165204426000084/goog-20260930.htm" target="_blank" rel="noopener">Alphabet Form 10-Q（2026/9/30）</a></td></tr><tr><td class="nm">Broadcom</td><td><span class="pill t1">厚い</span></td><td>投資適格（水準は未確認）</td><td>BofAは保証が$370Bまで拡大すると推計</td><td class="r">29.6<br><small>Q3 FY26</small></td><td class="r ">13.1</td><td class="r ">13.7<br><small>四半期</small></td><td class="r ">54.7</td><td class="r">24.0</td><td class="r">57.2</td><td class="r">0.42倍</td><td class="r">—</td><td class="r">72.5</td><td class="r">126.8</td><td>26/8/2</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001730168/000173016826000076/avgo-08022026x8kxex99.htm" target="_blank" rel="noopener">Broadcom 決算リリース FY26 Q3</a></td></tr><tr><td class="nm">AMD</td><td><span class="pill t1">厚い</span></td><td>未確認</td><td>FCFは在庫積み増しで縮小</td><td class="r">13.4<br><small>Q3</small></td><td class="r ">2.4</td><td class="r ">0.6<br><small>四半期</small></td><td class="r ">2.2</td><td class="r">15.8</td><td class="r">7.1</td><td class="r">2.23倍</td><td class="r">—</td><td class="r">0.3</td><td class="r">—</td><td>26/9/26</td><td class="sr"><a href="https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000188/0000002488-26-000188.pdf" target="_blank" rel="noopener">AMD 決算資料 2026年Q3</a></td></tr><tr><td class="nm">Amazon</td><td><span class="pill t2">余裕が縮小</span></td><td>S&amp;P AA（安定的）／他は未確認</td><td>長期債務が9か月で2.6倍</td><td class="r">201.9<br><small>Q3</small></td><td class="r ">20.7</td><td class="r neg">−42.4<br><small>12か月</small></td><td class="r neg">−42.4</td><td class="r">114.2</td><td class="r">173.1</td><td class="r">0.66倍</td><td class="r">164.9</td><td class="r">—</td><td class="r">254.4</td><td>26/9/30</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001018724/000101872426000038/amzn-20260930xex991.htm" target="_blank" rel="noopener">Amazon 決算リリース 2026年Q3</a></td></tr><tr><td class="nm">Meta</td><td><span class="pill t2">余裕が縮小</span></td><td>S&amp;P AA−（安定的）</td><td>CDSが10月に過去最高。純利益は訴訟費用$9.9B後</td><td class="r">64.6<br><small>Q3</small></td><td class="r ">9.9</td><td class="r neg">−2.1<br><small>四半期</small></td><td class="r ">14.7</td><td class="r">82.5</td><td class="r">80.9</td><td class="r">1.02倍</td><td class="r">355.7</td><td class="r">41.5</td><td class="r">454.5</td><td>26/9/30</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001326801/000162828026066700/meta-09302026xexhibit991.htm" target="_blank" rel="noopener">Meta 決算リリース 2026年Q3</a></td></tr><tr><td class="nm">SpaceX/xAI</td><td><span class="pill t2">余裕が縮小</span></td><td>S&amp;P BBB／Moody&#x27;s Baa1</td><td>Q4設備投資は$35〜40Bの見通し</td><td class="r">14.6<br><small>Q3</small></td><td class="r ">4.4</td><td class="r neg">−10.0<br><small>四半期</small></td><td class="r neg">−40.0</td><td class="r">89.9</td><td class="r">38.8</td><td class="r">2.32倍</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td>26/9/30</td><td class="sr"><a href="https://www.hl.co.uk/shares/share-research/spacex-q3-results-ai-powers-a-big-beat" target="_blank" rel="noopener">Hargreaves Lansdown：SpaceX Q3</a></td></tr><tr><td class="nm">Oracle</td><td><span class="pill t3">格付けの割に薄い</span></td><td>S&amp;P BBB−／Moody&#x27;s Baa2（ネガティブ）／Fitch BBB</td><td>CDS過去最高圏。社債の時価は額面の85%（8月末）</td><td class="r">19.3<br><small>Q1 FY27</small></td><td class="r ">4.8</td><td class="r neg">−28.7<br><small>12か月</small></td><td class="r neg">−28.7</td><td class="r">37.1</td><td class="r">125.3</td><td class="r">0.30倍</td><td class="r">288.0</td><td class="r">—</td><td class="r">34.1</td><td>26/8/31</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1341439/000119312526389274/orcl-20260831.htm" target="_blank" rel="noopener">Oracle Form 10-Q（2026/8/31）</a></td></tr><tr><td class="nm">ソフトバンクG</td><td><span class="pill t3">格付けの割に薄い</span></td><td>S&amp;P BB+／Fitch BB+／JCR A</td><td>CDS 466bp。LTV 13.0%は6月末で、株価は9月初から約半減<br><small>負債は純負債10.81兆円を換算</small></td><td class="r">—<br><small>—</small></td><td class="r ">—</td><td class="r ">—<br><small></small></td><td class="r ">—</td><td class="r">—</td><td class="r">66.6</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td>26/6/30</td><td class="sr"><a href="https://group.softbank/news/ir/20260806_1" target="_blank" rel="noopener">ソフトバンクG：NAV情報（2026/6末）</a></td></tr><tr><td class="nm">Anthropic</td><td><span class="pill t4">外部資金と売上成長が頼り</span></td><td>格付けなし</td><td>約束$900.9B（うち12か月以内$70.7B）。IPOは11月18日に価格決定予定<br><small>純利益欄は営業損失（$2.0Bの一時費用を含む）。FCFは上半期の値</small></td><td class="r">17.0<br><small>Q3</small></td><td class="r neg">−0.6</td><td class="r ">3.5<br><small>上半期</small></td><td class="r ">6.9</td><td class="r">131.9</td><td class="r">6.2</td><td class="r">21.27倍</td><td class="r">—</td><td class="r">—</td><td class="r">900.9</td><td>26/9/30</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td class="nm">OpenAI</td><td><span class="pill t4">外部資金と売上成長が頼り</span></td><td>格付けなし（投資適格でないとSB EnergyがS-1で記載）</td><td>約束$665Bに対し年換算売上は約$50B（9月）<br><small>営業損失を表示。社内計画では2026〜30年に累計$278Bの現金流出（FT報道）</small></td><td class="r">5.7<br><small>Q1</small></td><td class="r neg">−9.3</td><td class="r neg">−3.7<br><small>四半期</small></td><td class="r neg">−14.8</td><td class="r">—</td><td class="r">0.0</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">665.0</td><td>26/3/31</td><td class="sr"><a href="https://augment.market/pulse/openai-reportedly-0-debt-665b-in-commitments" target="_blank" rel="noopener">Augment：OpenAI $665B（The Information報道の引用）</a></td></tr><tr><td class="nm">CoreWeave</td><td><span class="pill t5">危険域</span></td><td>S&amp;P B+（ポジティブ）／Moody&#x27;s Ba3（報道）</td><td>5年CDSは10月に1,168bp。Q4の支払利息見通し$1.05〜1.15B<br><small>手元は現金と有価証券。別に制限付き現金$2.3B。受注残$132.3B</small></td><td class="r">3.7<br><small>Q3</small></td><td class="r neg">−0.7</td><td class="r neg">−17.9<br><small>9か月</small></td><td class="r neg">−23.9</td><td class="r">4.2</td><td class="r">46.9</td><td class="r">0.09倍</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td>26/9/30</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001769628/000176962826000465/crwv-20260930.htm" target="_blank" rel="noopener">CoreWeave Form 10-Q（2026/9/30）</a></td></tr><tr><td class="nm">Nebius</td><td><span class="pill t5">危険域</span></td><td>格付け未確認</td><td>New Jerseyの一部が2027年4〜6月に遅延。2027年の設備投資は$40〜45B<br><small>受注残$38.7B。前受金の残高$9.4B</small></td><td class="r">1.0<br><small>Q3</small></td><td class="r neg">−0.0</td><td class="r neg">−11.2<br><small>9か月</small></td><td class="r neg">−14.9</td><td class="r">7.4</td><td class="r">14.2</td><td class="r">0.52倍</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td>26/9/30</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1513845/000110465926126008/tm2629571d1_ex99-1.htm" target="_blank" rel="noopener">Nebius 6-K 2026年Q3決算</a></td></tr><tr><td class="nm">IREN</td><td><span class="pill t6">データ不足</span></td><td>格付け未確認</td><td>Microsoft案件は6%で調達</td><td class="r">—<br><small>—</small></td><td class="r ">—</td><td class="r ">—<br><small></small></td><td class="r ">—</td><td class="r">5.9</td><td class="r">7.6</td><td class="r">0.78倍</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td>決算期末</td><td class="sr"><a href="https://weissratings.com/en/weiss-ratings-daily/which-neocloud-stock-is-most-at-risk-coreweave-applied-digital-nebius-iren-and-hut-8-ranked" target="_blank" rel="noopener">Weiss Ratings：Nebius・IRENの債務</a></td></tr></tbody></table></div>
+</section>
+
+<section class="sec">
+  <header><h2>循環取引</h2><p class="sub">出した資金がどう戻るかの整理です。「戻り÷出し」は、出した1ドルに対して何ドルの売上約束が戻るかです。IMFは公表済みの循環案件14件を出資約$300B、負債約$650B、将来の売上約束約$1.4兆と集計しています。</p></header>
+  <div class="tb"><table><thead><tr><th>出す側</th><th>受ける側</th><th>出し方</th><th class="r">出し $B</th><th>戻り方</th><th class="r">戻り $B</th><th class="r">戻り÷出し</th><th>崩れる時の注意点</th></tr></thead><tbody><tr><td class="nm">Amazon</td><td>OpenAI</td><td>Series C優先株（完了）</td><td class="r">50.0</td><td>AWSの利用約束（8年）</td><td class="r">138.0</td><td class="r">2.8倍</td><td>OpenAIの資金が尽きると売上が消え、出資の評価も同時に下がる</td></tr><tr><td class="nm">Amazon</td><td>Anthropic</td><td>優先株・転換社債（上限）</td><td class="r">33.0</td><td>AWSの利用約束（10年）</td><td class="r">110.0</td><td class="r">3.3倍</td><td>簿価$238.7Bへの評価益が利益に入っており、評価が崩れると利益も減る</td></tr><tr><td class="nm">Alphabet</td><td>Anthropic</td><td>2026年契約の出資＋IPO私募$10B</td><td class="r">30.0</td><td>Google Cloud利用約束（2033年7月まで）。別途TPU $125〜150B</td><td class="r">121.3</td><td class="r">4.0倍</td><td>Anthropic向けのリース保証もAlphabetが負う</td></tr><tr><td class="nm">Microsoft</td><td>OpenAI</td><td>約27%の持分（評価額）</td><td class="r">135.0</td><td>Azure追加購入。9月四半期のOpenAI由来売上は$10B</td><td class="r">250.0</td><td class="r">1.9倍</td><td>売上の約11%がOpenAI由来</td></tr><tr><td class="nm">Microsoft</td><td>Anthropic</td><td>最大$5Bの出資発表（IPO私募$1Bを含むかは未確認）</td><td class="r">5.0</td><td>Azure利用約束（最大$49.2B）</td><td class="r">47.2</td><td class="r">9.4倍</td><td>Anthropicの売上が約束に届かない場合</td></tr><tr><td class="nm">NVIDIA</td><td>OpenAI・SB Energy</td><td>出資$30B＋リース保証$105B</td><td class="r">135.0</td><td>PORTS-Pikeの世代ごとのGPU需要$150〜200B（会社説明の下限）</td><td class="r">150.0</td><td class="r">1.1倍</td><td>OpenAIが格付けを得れば保証は終了。不履行ならNVIDIAが賃借人の立場を継ぐ</td></tr><tr><td class="nm">NVIDIA</td><td>CoreWeave等</td><td>出資$2B＋買取$6.3B＋AIクラウド$36B</td><td class="r">44.3</td><td>GPU購入。CoreWeaveの2026年設備投資は$35〜39B</td><td class="r">—</td><td class="r">—</td><td>買取は第三者が使えば減る。需要が消えた時だけ満額になる</td></tr><tr><td class="nm">Broadcom</td><td>Anthropic</td><td>融資枠$42B＋保証$72.5B＋IPO私募$1B</td><td class="r">115.5</td><td>TPUラックのリース（5年）</td><td class="r">161.2</td><td class="r">1.4倍</td><td>不履行時はリース全額が即時支払いになり得て、融資枠も使えなくなる</td></tr><tr><td class="nm">AMD</td><td>OpenAI</td><td>ワラント1.6億株（評価額）</td><td class="r">28.6</td><td>6GW分のGPU（推計）</td><td class="r">90.0</td><td class="r">3.1倍</td><td>ワラントは株価と納入の達成で確定。株価が下がれば価値も下がる</td></tr><tr><td class="nm">AMD</td><td>Anthropic</td><td>最大$5Bの出資（IPO私募$2.5Bを含むかは未確認）</td><td class="r">5.0</td><td>AMDハードの購入約束</td><td class="r">20.0</td><td class="r">4.0倍</td><td>GPU納入に連動</td></tr><tr><td class="nm">ソフトバンクG</td><td>OpenAI→SB Energy</td><td>累計出資（借入と社債で調達）</td><td class="r">64.6</td><td>子会社SB Energyへの20年リース（上限）</td><td class="r">430.0</td><td class="r">6.7倍</td><td>SBGの出資資金は社債。OpenAIのIPO延期で回収時期が後ろへ</td></tr><tr><td class="nm">NVIDIA</td><td>Anthropic</td><td>IPO私募 約$10B</td><td class="r">10.0</td><td>直接の購入約束はない。NVIDIA製GPUを使うMicrosoft・SpaceX・Nscale・Lambdaへの約束は計$253.6B</td><td class="r">—</td><td class="r">—</td><td>Anthropicの支払いが減ると、各クラウドのGPU追加発注が先に減る</td></tr></tbody></table></div>
+</section>
+
+<section class="sec">
+  <header><h2>取引の全明細（131件）</h2><p class="sub">確度 A：開示書類や会社発表。B：大手報道や信用専門媒体。C：その他の二次資料、または推計。</p></header>
+  <div class="tb"><table><thead><tr><th>出す側</th><th>受ける側</th><th>形態</th><th class="r">金額</th><th>状態</th><th>中身</th><th>確度</th><th>出典</th></tr></thead><tbody><tr><td>OpenAI</td><td>SB Energy</td><td class="kc">払う約束</td><td class="r">$430B</td><td>上限</td><td class="nt">Ohio等の20年リース。SB Energyのデータセンター受注残。大半がPORTS-PikeのOpenAI向けで、一部にSoftBank向けを含む。割引前の総額</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/2133037/000162828026062846/sbenergy-sx1a2.htm" target="_blank" rel="noopener">SB Energy S-1/A</a></td></tr><tr><td>Microsoft</td><td>DC大家・リース先（内訳非開示）</td><td class="kc">払う約束</td><td class="r">$364.6B</td><td>確定</td><td class="nt">未開始リース。条件付きの契約を含む</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0000789019/000119312526436133/msft-20260930.htm" target="_blank" rel="noopener">Microsoft Form 10-Q（2026/9/30）</a></td></tr><tr><td>Meta</td><td>DC大家・リース先（内訳非開示）</td><td class="kc">払う約束</td><td class="r">$355.7B</td><td>確定</td><td class="nt">未開始リース。合弁向けを含む</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001326801/000162828026066773/meta-20260930.htm" target="_blank" rel="noopener">Meta Form 10-Q（2026/9/30）</a></td></tr><tr><td>OpenAI</td><td>Broadcom</td><td class="kc">払う約束</td><td class="r">$350B</td><td>推計</td><td class="nt">10GW分の推計値。契約金額は非開示</td><td>C</td><td class="sr"><a href="https://tomtunguz.com/openai-hardware-spending-2025-2035/" target="_blank" rel="noopener">Tomasz Tunguz：OpenAIのベンダー別推計</a></td></tr><tr><td>OpenAI</td><td>Oracle</td><td class="kc">払う約束</td><td class="r">$300B</td><td>報道</td><td class="nt">約5年分。S&amp;PはOracle受注残の約半分がOpenAIと指摘</td><td>B</td><td class="sr"><a href="https://convexityos.com/blog/openai-revenue-gap-2026" target="_blank" rel="noopener">Convexity：OpenAIの開示契約額（各社提出書類を引用）</a></td></tr><tr><td>Oracle</td><td>DC大家・リース先（内訳非開示）</td><td class="kc">払う約束</td><td class="r">$288B</td><td>確定</td><td class="nt">未開始のデータセンターリース。15〜19年</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1341439/000119312526389274/orcl-20260831.htm" target="_blank" rel="noopener">Oracle Form 10-Q（2026/8/31）</a></td></tr><tr><td>OpenAI</td><td>Microsoft</td><td class="kc">払う約束</td><td class="r">$250B</td><td>確定</td><td class="nt">Azureの追加購入。Microsoft 10-Qの記載で、既存契約への上乗せ</td><td>B</td><td class="sr"><a href="https://convexityos.com/blog/openai-revenue-gap-2026" target="_blank" rel="noopener">Convexity：OpenAIの開示契約額（各社提出書類を引用）</a></td></tr><tr><td>Amazon</td><td>DC大家・リース先（内訳非開示）</td><td class="kc">払う約束</td><td class="r">$164.9B</td><td>確定</td><td class="nt">未開始リース</td><td>B</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001018724/000101872426000040/amzn-20260930.htm" target="_blank" rel="noopener">Amazon Form 10-Q（2026/9/30）</a></td></tr><tr><td>Anthropic</td><td>AI XPV（TPUリースSPV）</td><td class="kc">払う約束</td><td class="r">$161.2B</td><td>確定</td><td class="nt">5年の機器リース。解約不可。Anthropicが子会社SPVを保証し、担保の制限付き現金$2.6B</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>OpenAI</td><td>Amazon</td><td class="kc">払う約束</td><td class="r">$138B</td><td>確定</td><td class="nt">当初$38B＋拡大$100B（8年）</td><td>B</td><td class="sr"><a href="https://convexityos.com/blog/openai-revenue-gap-2026" target="_blank" rel="noopener">Convexity：OpenAIの開示契約額（各社提出書類を引用）</a></td></tr><tr><td>Microsoft</td><td>OpenAI</td><td class="ke">出資</td><td class="r">$135B</td><td>評価額</td><td class="nt">2025年の再編時の持分価値、約27%。投下額ではありません</td><td>C</td><td class="sr"><a href="https://convexityos.com/blog/openai-revenue-gap-2026" target="_blank" rel="noopener">Convexity：OpenAIの開示契約額（各社提出書類を引用）</a></td></tr><tr><td>Alphabet</td><td>DC大家・リース先（内訳非開示）</td><td class="kc">払う約束</td><td class="r">$130.5B</td><td>確定</td><td class="nt">未開始リース</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001652044/000165204426000084/goog-20260930.htm" target="_blank" rel="noopener">Alphabet Form 10-Q（2026/9/30）</a></td></tr><tr><td>社債・融資市場</td><td>Oracle</td><td class="kd">融資</td><td class="r">$125.3B</td><td>確定</td><td class="nt">借入残高。11月2日にさらに$10B起債</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1341439/000119312526389274/orcl-20260831.htm" target="_blank" rel="noopener">Oracle Form 10-Q（2026/8/31）</a></td></tr><tr><td>Anthropic</td><td>Alphabet</td><td class="kc">払う約束</td><td class="r">$125B</td><td>推計</td><td class="nt">追加TPU $125〜150B。2028〜31年提供。契約債務表には含まれない</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>Anthropic</td><td>Alphabet</td><td class="kc">払う約束</td><td class="r">$121.3B</td><td>確定</td><td class="nt">2026年4月〜2033年7月。利用量にかかわらず支払い</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>Anthropic</td><td>SpaceX/xAI</td><td class="kc">払う約束</td><td class="r">$120.5B</td><td>上限</td><td class="nt">全量提供時は月約$3.1B（12月予定）。2027年1月・3月以降は90日前通知で解約可</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>Anthropic</td><td>Amazon</td><td class="kc">払う約束</td><td class="r">$110B</td><td>確定</td><td class="nt">2036年4月まで。利用量にかかわらず支払い</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>NVIDIA</td><td>SB Energy</td><td class="kg">肩代わり</td><td class="r">$105B</td><td>上限</td><td class="nt">OpenAIのOhioリースを保証。2029年度から段階的に発効。OpenAIが一定の格付けを得ると終了。OpenAIが補償</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm" target="_blank" rel="noopener">NVIDIA Form 10-Q（2026/7/26）</a></td></tr><tr><td>AI XPV（TPUリースSPV）</td><td>Broadcom</td><td class="kc">払う約束</td><td class="r">$98B</td><td>報道</td><td class="nt">TPUラック購入。$35B＋$63B</td><td>B</td><td class="sr"><a href="https://www.ifre.com/loans/2496132/chips-with-everything-broadcom-backstops-us42bn-funding-for-anthropic" target="_blank" rel="noopener">IFR：Broadcomの保証付き融資</a></td></tr><tr><td>Apollo</td><td>AI XPV（TPUリースSPV）</td><td class="kd">融資</td><td class="r">$98B</td><td>報道</td><td class="nt">$35B＋$63B。Blackstoneと共同で割当非開示</td><td>B</td><td class="sr"><a href="https://www.ifre.com/loans/2496132/chips-with-everything-broadcom-backstops-us42bn-funding-for-anthropic" target="_blank" rel="noopener">IFR：Broadcomの保証付き融資</a></td></tr><tr><td>OpenAI</td><td>AMD</td><td class="kc">払う約束</td><td class="r">$90B</td><td>推計</td><td class="nt">6GW分の推計値</td><td>C</td><td class="sr"><a href="https://tomtunguz.com/openai-hardware-spending-2025-2035/" target="_blank" rel="noopener">Tomasz Tunguz：OpenAIのベンダー別推計</a></td></tr><tr><td>ソフトバンクG</td><td>OpenAI</td><td class="ke">出資</td><td class="r">$64.6B</td><td>完了</td><td class="nt">累計。持分約13%</td><td>A</td><td class="sr"><a href="https://group.softbank/news/press/20261001" target="_blank" rel="noopener">ソフトバンクG：OpenAI追加出資の完了（2026/10/1）</a></td></tr><tr><td>Amazon</td><td>OpenAI</td><td class="ke">出資</td><td class="r">$50B</td><td>完了</td><td class="nt">Series C優先株</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001018724/000101872426000040/amzn-20260930.htm" target="_blank" rel="noopener">Amazon Form 10-Q（2026/9/30）</a></td></tr><tr><td>Anthropic</td><td>Microsoft</td><td class="kc">払う約束</td><td class="r">$47.2B</td><td>確定</td><td class="nt">2026年11月〜2033年6月。最低$47.2B、最大$49.2B。利用量にかかわらず支払い</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>社債・融資市場</td><td>CoreWeave</td><td class="kd">融資</td><td class="r">$46.9B</td><td>確定</td><td class="nt">9月末の借入総額（リース除く）。うちリコース$41.6B、ノンリコース$5.3B</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001769628/000176962826000465/crwv-20260930.htm" target="_blank" rel="noopener">CoreWeave Form 10-Q（2026/9/30）</a></td></tr><tr><td>Anthropic</td><td>Nscale</td><td class="kc">払う約束</td><td class="r">$44.6B</td><td>上限</td><td class="nt">2033年まで。提供・受け入れ分だけ支払い。遅延時は解約可</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>Microsoft</td><td>Nscale</td><td class="kc">払う約束</td><td class="r">$43.8B</td><td>上限</td><td class="nt">2033年まで。別途英国の約$3B案件は10月に解約と報道</td><td>B</td><td class="sr"><a href="https://acquinox.capital/insights/compute-energy/neocloud-financing-balance-sheet-test" target="_blank" rel="noopener">Acquinox：ネオクラウドの契約額</a></td></tr><tr><td>Broadcom</td><td>AI XPV（TPUリースSPV）</td><td class="kg">肩代わり</td><td class="r">$43.5B</td><td>報道</td><td class="nt">$63B案件のシニア部分に残価保証</td><td>B</td><td class="sr"><a href="https://finance.yahoo.com/markets/stocks/articles/broadcom-ceo-says-capital-available-020300353.html" target="_blank" rel="noopener">Yahoo Finance：Broadcom $43.5B保証（Reuters・WSJ引用）</a></td></tr><tr><td>Alphabet</td><td>DC大家・リース先（内訳非開示）</td><td class="kg">肩代わり</td><td class="r">$43.4B</td><td>確定</td><td class="nt">実行済みの保証$48.0BからTeraWulf・Cipher分を除いた額。相手先は非開示</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001652044/000165204426000084/goog-20260930.htm" target="_blank" rel="noopener">Alphabet Form 10-Q（2026/9/30）</a></td></tr><tr><td>Broadcom</td><td>Anthropic</td><td class="kd">融資</td><td class="r">$42B</td><td>上限</td><td class="nt">転換社債の枠。賃料支払いに充当。不履行時は使えない可能性</td><td>B</td><td class="sr"><a href="https://www.cnbc.com/2026/10/01/broadcom-lending-anthropic-42-billion-chips-reuters.html" target="_blank" rel="noopener">CNBC：Broadcomの$42B融資</a></td></tr><tr><td>Meta</td><td>Meta JV（Hyperion・El Paso）</td><td class="kg">肩代わり</td><td class="r">$41.5B</td><td>上限</td><td class="nt">2拠点への残価保証。リースを更新しない場合に発動</td><td>B</td><td class="sr"><a href="https://fourweekmba.com/ai-meta-got-back-59-of-what-it-put-into-hyperion-in-cash/" target="_blank" rel="noopener">Meta 10-Qの合弁保証の引用（FourWeekMBA）</a></td></tr><tr><td>Anthropic</td><td>Lambda</td><td class="kc">払う約束</td><td class="r">$41.3B</td><td>上限</td><td class="nt">うち2026年8月の$34.9Bは、Lambdaが施設リースを期限までに確保できず、現在どちらからも解約可能</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>SBGブリッジ団</td><td>ソフトバンクG</td><td class="kd">融資</td><td class="r">$40B</td><td>返済済</td><td class="nt">$30Bを実行し9月15日に返済。残り$10Bは9月30日に解約。社債$11.1Bへ置換</td><td>A</td><td class="sr"><a href="https://www.nikkei.com/article/DGXZQOUB098P50Z00C26A9000000/" target="_blank" rel="noopener">日経：SBGブリッジローン返済</a></td></tr><tr><td>Apollo</td><td>SpaceX/xAI</td><td class="kd">融資</td><td class="r">$40B</td><td>交渉中</td><td class="nt">$10B融資＋$30B社債。NVIDIAチップ購入用</td><td>B</td><td class="sr"><a href="https://investinglive.com/stocks/spacex-seeks-40-billion-in-debt-led-by-apollo-to-fund-nvidia-chip-order-ft-says/" target="_blank" rel="noopener">investingLive：SpaceX $40B（FT引用）</a></td></tr><tr><td>社債・融資市場</td><td>SpaceX/xAI</td><td class="kd">融資</td><td class="r">$38.8B</td><td>確定</td><td class="nt">債務とファイナンスリース</td><td>B</td><td class="sr"><a href="https://www.hl.co.uk/shares/share-research/spacex-q3-results-ai-powers-a-big-beat" target="_blank" rel="noopener">Hargreaves Lansdown：SpaceX Q3</a></td></tr><tr><td>Vantage融資団</td><td>Vantage（Texas・Wisconsin）</td><td class="kd">融資</td><td class="r">$38B</td><td>確定</td><td class="nt">Texas $23.25B、Wisconsin $14.75B。Oracle賃借。売却に約8か月</td><td>B</td><td class="sr"><a href="https://www.datacenterdynamics.com/en/news/oracle-set-to-receive-38bn-debt-package-for-data-center-projects-report/" target="_blank" rel="noopener">DCD：$38B融資の銀行団</a></td></tr><tr><td>NVIDIA</td><td>AIクラウド群（内訳非開示）</td><td class="kc">払う約束</td><td class="r">$36B</td><td>確定</td><td class="nt">AIクラウドの余剰能力を買い取る約束。通常6年。第三者が使えば減る</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm" target="_blank" rel="noopener">NVIDIA Form 10-Q（2026/7/26）</a></td></tr><tr><td>Meta</td><td>CoreWeave</td><td class="kc">払う約束</td><td class="r">$35.2B</td><td>上限</td><td class="nt">$14.2B＋2026年4月の$21.0B（2032年12月まで）</td><td>B</td><td class="sr"><a href="https://www.stocktitan.net/articles/coreweave-nebius-ai-cloud-debt-when-it-comes-due" target="_blank" rel="noopener">StockTitan：CoreWeave 10-Qの債務と契約の引用</a></td></tr><tr><td>Amazon</td><td>Anthropic</td><td class="ke">出資</td><td class="r">$33B</td><td>上限</td><td class="nt">累計$8B＋最大$25B。Amazonの簿価は約$238.7B</td><td>B</td><td class="sr"><a href="https://www.9fin.com/insights/anthropic-s-1-revenue-gains-looming-infrastructure-bill" target="_blank" rel="noopener">9fin：Anthropic S-1の分析</a></td></tr><tr><td>NVIDIA</td><td>Firmus</td><td class="kc">払う約束</td><td class="r">$30B</td><td>上限</td><td class="nt">バタム拠点を6年利用。$36Bの内数かは不明</td><td>B</td><td class="sr"><a href="https://phys.org/news/2026-10-paying-circular-money-machine-ai.html" target="_blank" rel="noopener">The Conversation（Phys.org）：Firmus</a></td></tr><tr><td>NVIDIA</td><td>OpenAI</td><td class="ke">出資</td><td class="r">$30B</td><td>完了</td><td class="nt">非公開ラウンドへの出資</td><td>B</td><td class="sr"><a href="https://www.ifre.com/bonds/2476015/nvidia-defends-circular-finance-deals-as-commitments-surpass-us530bn" target="_blank" rel="noopener">IFR：NVIDIAの約束と保証</a></td></tr><tr><td>Broadcom</td><td>AI XPV（TPUリースSPV）</td><td class="kg">肩代わり</td><td class="r">$29B</td><td>上限</td><td class="nt">Anthropicのリース。債務不履行時は未払いの85%からラック売却額を引いた差額を負担</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001730168/000173016826000080/avgo-20260802.htm" target="_blank" rel="noopener">Broadcom Form 10-Q（2026/8/2）</a></td></tr><tr><td>AMD</td><td>OpenAI</td><td class="ke">出資</td><td class="r">$28.6B</td><td>評価額</td><td class="nt">1.6億株のワラント。$178.58で評価、未確定</td><td>B</td><td class="sr"><a href="https://fourweekmba.com/ai-amds-openai-and-meta-warrants-rose-12-5x-to-178-58-a-share/" target="_blank" rel="noopener">AMD 10-Qのワラント評価の引用（FourWeekMBA）</a></td></tr><tr><td>AMD</td><td>Meta</td><td class="ke">出資</td><td class="r">$28.6B</td><td>評価額</td><td class="nt">同上</td><td>B</td><td class="sr"><a href="https://fourweekmba.com/ai-amds-openai-and-meta-warrants-rose-12-5x-to-178-58-a-share/" target="_blank" rel="noopener">AMD 10-Qのワラント評価の引用（FourWeekMBA）</a></td></tr><tr><td>Alphabet</td><td>DC大家・リース先（内訳非開示）</td><td class="kg">肩代わり</td><td class="r">$22.8B</td><td>確定</td><td class="nt">電力設備の調達を支える保証</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001652044/000165204426000084/goog-20260930.htm" target="_blank" rel="noopener">Alphabet Form 10-Q（2026/9/30）</a></td></tr><tr><td>OpenAI</td><td>CoreWeave</td><td class="kc">払う約束</td><td class="r">$22.4B</td><td>上限</td><td class="nt">契約累計。直近の注文は2031年5月までに最大約$6.5B</td><td>B</td><td class="sr"><a href="https://www.stocktitan.net/articles/coreweave-nebius-ai-cloud-debt-when-it-comes-due" target="_blank" rel="noopener">StockTitan：CoreWeave 10-Qの債務と契約の引用</a></td></tr><tr><td>Anthropic</td><td>AMD</td><td class="kc">払う約束</td><td class="r">$20B</td><td>確定</td><td class="nt">固定額なし。初期分を全量調達すれば$20B超。解約不可</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>NVIDIA</td><td>AIクラウド群（内訳非開示）</td><td class="kc">払う約束</td><td class="r">$20B</td><td>確定</td><td class="nt">リース契約を自ら結び、後に第三者へ譲渡する予定</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm" target="_blank" rel="noopener">NVIDIA Form 10-Q（2026/7/26）</a></td></tr><tr><td>Alphabet</td><td>Anthropic</td><td class="ke">出資</td><td class="r">$20B</td><td>条件付</td><td class="nt">2026年の株式購入契約に基づく出資の一部をIPO時に実行</td><td>B</td><td class="sr"><a href="https://www.9fin.com/insights/anthropic-s-1-revenue-gains-looming-infrastructure-bill" target="_blank" rel="noopener">9fin：Anthropic S-1の分析</a></td></tr><tr><td>社債・融資市場</td><td>Meta JV（Hyperion・El Paso）</td><td class="kd">融資</td><td class="r">$18.6B</td><td>計算</td><td class="nt">Hyperion債とEl Paso債の合計$39.6Bの残り</td><td>B</td><td class="sr"><a href="https://www.globaldatacenterhub.com/p/blackrock-launches-123-billion-bond" target="_blank" rel="noopener">Global Data Center Hub：El Paso債</a></td></tr><tr><td>Meta</td><td>Meta JV（Hyperion・El Paso）</td><td class="kc">払う約束</td><td class="r">$18.5B</td><td>計算</td><td class="nt">最大損失$68.40Bから持分・資金拠出・残価保証を除いた額</td><td>B</td><td class="sr"><a href="https://fourweekmba.com/ai-meta-got-back-59-of-what-it-put-into-hyperion-in-cash/" target="_blank" rel="noopener">Meta 10-Qの合弁保証の引用（FourWeekMBA）</a></td></tr><tr><td>Jupiter融資団（銀行名未確認）</td><td>STACK（Project Jupiter）</td><td class="kd">融資</td><td class="r">$18B</td><td>確定</td><td class="nt">Project Jupiter。9月に89〜91セントの気配（FT）</td><td>C</td><td class="sr"><a href="https://capexcat.substack.com/p/the-first-crack-in-the-ai-money-chain" target="_blank" rel="noopener">Capex Cat：Oracle建設融資（FT・Bloomberg引用）</a></td></tr><tr><td>PIMCO</td><td>Meta JV（Hyperion・El Paso）</td><td class="kd">融資</td><td class="r">$18B</td><td>確定</td><td class="nt">Hyperion債$27Bのうち</td><td>B</td><td class="sr"><a href="https://www.itiger.com/hans/news/2582394141" target="_blank" rel="noopener">WSJ：Hyperion等の大型案件</a></td></tr><tr><td>Alphabet</td><td>DC大家・リース先（内訳非開示）</td><td class="kg">肩代わり</td><td class="r">$17.7B</td><td>条件付</td><td class="nt">将来設定する保証$27.7BからCrux分を除いた額</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001652044/000165204426000084/goog-20260930.htm" target="_blank" rel="noopener">Alphabet Form 10-Q（2026/9/30）</a></td></tr><tr><td>Microsoft</td><td>Nebius</td><td class="kc">払う約束</td><td class="r">$17.4B</td><td>確定</td><td class="nt">5年。最大$19.4B</td><td>B</td><td class="sr"><a href="https://financefeeds.com/nebius-stock-120-37-microsoft-neocloud-oversight/" target="_blank" rel="noopener">FinanceFeeds：NebiusのMicrosoft契約</a></td></tr><tr><td>Anthropic</td><td>短期契約の相手（非開示）</td><td class="kc">払う約束</td><td class="r">$17.4B</td><td>確定</td><td class="nt">短期契約の最低支払額（9月末）。複数年契約より大幅に割高と開示</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>社債・融資市場</td><td>Nebius</td><td class="kd">融資</td><td class="r">$14.2B</td><td>確定</td><td class="nt">9月末の借入総額。9か月で転換社債$10.1Bを発行</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1513845/000110465926126008/tm2629571d1_ex99-1.htm" target="_blank" rel="noopener">Nebius 6-K 2026年Q3決算</a></td></tr><tr><td>Anthropic</td><td>Rumble（Northern Data）</td><td class="kc">払う約束</td><td class="r">$13.7B</td><td>報道</td><td class="nt">6年。Rumbleは顧客名を伏せて開示。相手がAnthropicとの報道は両社とも未確認</td><td>C</td><td class="sr"><a href="https://247wallst.com/investing/2026/09/14/rumble-soars-10-on-report-anthropic-is-the-13-7b-compute-customer-coreweave-and-nebius-drop-9/" target="_blank" rel="noopener">24/7 Wall St.：Rumbleの$13.7B契約の相手はAnthropicとの報道</a></td></tr><tr><td>社債・融資市場</td><td>ソフトバンクG</td><td class="kd">融資</td><td class="r">$11.1B</td><td>確定</td><td class="nt">9月のハイイールド債</td><td>B</td><td class="sr"><a href="https://group.softbank/news/press/20261001" target="_blank" rel="noopener">ソフトバンクG：OpenAI追加出資の完了（2026/10/1）</a></td></tr><tr><td>Alphabet</td><td>Crux AI（Google系JV）</td><td class="kg">肩代わり</td><td class="r">$10B</td><td>条件付</td><td class="nt">関連会社Crux AI向けの将来保証</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001652044/000165204426000084/goog-20260930.htm" target="_blank" rel="noopener">Alphabet Form 10-Q（2026/9/30）</a></td></tr><tr><td>NVIDIA</td><td>Anthropic</td><td class="ke">出資</td><td class="r">$10B</td><td>IPO私募</td><td class="nt">IPO同時の私募で約$10B。2025年発表の最大$10Bとの関係は未確認</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>Alphabet</td><td>Anthropic</td><td class="ke">出資</td><td class="r">$10B</td><td>IPO私募</td><td class="nt">IPO同時の私募で約$10B</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>Microsoft</td><td>IREN</td><td class="kc">払う約束</td><td class="r">$9.7B</td><td>計算</td><td class="nt">Nscale・Nebius・IRENの合計$70.9Bからの差し引き</td><td>C</td><td class="sr"><a href="https://financefeeds.com/nebius-stock-120-37-microsoft-neocloud-oversight/" target="_blank" rel="noopener">FinanceFeeds：NebiusのMicrosoft契約</a></td></tr><tr><td>JPMorgan</td><td>Abilene（Crusoe・Blue Owl）</td><td class="kd">融資</td><td class="r">$9.4B</td><td>報道</td><td class="nt">Stargate Abileneの建設融資</td><td>C</td><td class="sr"><a href="https://capexcat.substack.com/p/the-first-crack-in-the-ai-money-chain" target="_blank" rel="noopener">Capex Cat：Oracle建設融資（FT・Bloomberg引用）</a></td></tr><tr><td>Brookfield</td><td>Naver</td><td class="kd">融資</td><td class="r">$9B</td><td>上限</td><td class="nt">GPU資産のSPV。Naverが利用料を最長8年保証</td><td>C</td><td class="sr"><a href="https://www.globaldatacenterhub.com/p/navers-9b-gpu-spv-googles-17b-wyoming" target="_blank" rel="noopener">Global Data Center Hub：Naver案件</a></td></tr><tr><td>Blackstone</td><td>CoreWeave</td><td class="kd">融資</td><td class="r">$8.5B</td><td>確定</td><td class="nt">DDTL 4.0のアンカー。Metaの契約が裏付け。A3</td><td>B</td><td class="sr"><a href="https://www.stocktitan.net/articles/coreweave-nebius-ai-cloud-debt-when-it-comes-due" target="_blank" rel="noopener">StockTitan：CoreWeave 10-Qの債務と契約の引用</a></td></tr><tr><td>社債・融資市場</td><td>IREN</td><td class="kd">融資</td><td class="r">$7.6B</td><td>確定</td><td class="nt">決算期末</td><td>C</td><td class="sr"><a href="https://weissratings.com/en/weiss-ratings-daily/which-neocloud-stock-is-most-at-risk-coreweave-applied-digital-nebius-iren-and-hut-8-ranked" target="_blank" rel="noopener">Weiss Ratings：Nebius・IRENの債務</a></td></tr><tr><td>Fluidstack</td><td>TeraWulf</td><td class="kc">払う約束</td><td class="r">$6.7B</td><td>確定</td><td class="nt">Lake Marinerの10年契約</td><td>A</td><td class="sr"><a href="https://investors.terawulf.com/news-events/press-releases/detail/114/terawulf-announces-fluidstack-expansion-with-160-mw-cb-5-lease-at-lake-mariner" target="_blank" rel="noopener">TeraWulf：Google保証$3.2B</a></td></tr><tr><td>NVIDIA</td><td>CoreWeave</td><td class="kc">払う約束</td><td class="r">$6.3B</td><td>上限</td><td class="nt">売れ残り能力の買い取り（2032年4月まで）。$36Bの内数かは不明</td><td>B</td><td class="sr"><a href="https://www.stocktitan.net/articles/coreweave-nebius-ai-cloud-debt-when-it-comes-due" target="_blank" rel="noopener">StockTitan：CoreWeave 10-Qの債務と契約の引用</a></td></tr><tr><td>SB Energy</td><td>OpenAI</td><td class="ke">出資</td><td class="r">$5.5B</td><td>評価額</td><td class="nt">SB Energyが発行したワラント</td><td>C</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/2133037/000162828026062846/sbenergy-sx1a2.htm" target="_blank" rel="noopener">SB Energy S-1/A</a></td></tr><tr><td>Valor VCI（GPUリース）</td><td>NVIDIA</td><td class="kc">払う約束</td><td class="r">$5.4B</td><td>確定</td><td class="nt">GPU購入</td><td>B</td><td class="sr"><a href="https://www.ssga.com/library-content/products/fund-docs/etfs/us/ps/doc-vci-asset-holdings-prsd.pdf" target="_blank" rel="noopener">State Street：VCI資産の説明資料</a></td></tr><tr><td>SpaceX/xAI</td><td>Valor VCI（GPUリース）</td><td class="kc">払う約束</td><td class="r">$5.4B</td><td>確定</td><td class="nt">5年のGPUリース。SpaceXが保証</td><td>B</td><td class="sr"><a href="https://www.ssga.com/library-content/products/fund-docs/etfs/us/ps/doc-vci-asset-holdings-prsd.pdf" target="_blank" rel="noopener">State Street：VCI資産の説明資料</a></td></tr><tr><td>Microsoft</td><td>Anthropic</td><td class="ke">出資</td><td class="r">$5B</td><td>上限</td><td class="nt">発表ベース</td><td>C</td><td class="sr"><a href="https://convexityos.com/blog/openai-revenue-gap-2026" target="_blank" rel="noopener">Convexity：OpenAIの開示契約額（各社提出書類を引用）</a></td></tr><tr><td>AMD</td><td>Anthropic</td><td class="ke">出資</td><td class="r">$5B</td><td>上限</td><td class="nt">GPUの納入に連動して株式取得</td><td>B</td><td class="sr"><a href="https://www.cnbc.com/2026/07/22/amd-anthropic-ai-chip-investment.html" target="_blank" rel="noopener">CNBC：AMDのAnthropic出資</a></td></tr><tr><td>Blackstone</td><td>Crux AI（Google系JV）</td><td class="ke">出資</td><td class="r">$5B</td><td>上限</td><td class="nt">Crux AIへの資本</td><td>B</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001652044/000165204426000084/goog-20260930.htm" target="_blank" rel="noopener">Alphabet Form 10-Q（2026/9/30）</a></td></tr><tr><td>JPMorgan</td><td>Volta</td><td class="kd">融資</td><td class="r">$5B</td><td>確定</td><td class="nt">Goldmanと共同。利回り11%超</td><td>B</td><td class="sr"><a href="https://finance.yahoo.com/technology/ai/articles/wall-street-ai-debt-machine-103000166.html" target="_blank" rel="noopener">Bloomberg（Yahoo配信）：AI債務の供給過多</a></td></tr><tr><td>NVIDIA</td><td>AIクラウド群（内訳非開示）</td><td class="kg">肩代わり</td><td class="r">$3.5B</td><td>上限</td><td class="nt">土地・電力・建屋の保証。相手先は$712Mをエスクロー</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm" target="_blank" rel="noopener">NVIDIA Form 10-Q（2026/7/26）</a></td></tr><tr><td>Apollo</td><td>Valor VCI（GPUリース）</td><td class="kd">融資</td><td class="r">$3.5B</td><td>確定</td><td class="nt">第1順位</td><td>B</td><td class="sr"><a href="https://www.ssga.com/library-content/products/fund-docs/etfs/us/ps/doc-vci-asset-holdings-prsd.pdf" target="_blank" rel="noopener">State Street：VCI資産の説明資料</a></td></tr><tr><td>Citi</td><td>Nebius</td><td class="kd">融資</td><td class="r">$3.5B</td><td>確定</td><td class="nt">10月の担保付き融資枠</td><td>A</td><td class="sr"><a href="https://assets.nebius.com/assets/5bc733ff-bed7-415c-af10-74ce7881a764/Nebius-SHL-2026-Q3.pdf" target="_blank" rel="noopener">Nebius 株主への手紙 2026年Q3</a></td></tr><tr><td>Alphabet</td><td>TeraWulf</td><td class="kg">肩代わり</td><td class="r">$3.2B</td><td>確定</td><td class="nt">Fluidstackのリースを保証。ワラントで約14%取得</td><td>A</td><td class="sr"><a href="https://investors.terawulf.com/news-events/press-releases/detail/114/terawulf-announces-fluidstack-expansion-with-160-mw-cb-5-lease-at-lake-mariner" target="_blank" rel="noopener">TeraWulf：Google保証$3.2B</a></td></tr><tr><td>Fluidstack</td><td>Cipher</td><td class="kc">払う約束</td><td class="r">$3B</td><td>確定</td><td class="nt">Barber Lakeの10年契約</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1819989/000095010325012168/dp234624_ex9901.htm" target="_blank" rel="noopener">Cipher Mining 8-K：Google保証$1.4B</a></td></tr><tr><td>NVIDIA</td><td>SB Energy</td><td class="ke">出資</td><td class="r">$3B</td><td>確定</td><td class="nt">前払い$1.5B＋IPO時$1.5B</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/2133037/000162828026062846/sbenergy-sx1a2.htm" target="_blank" rel="noopener">SB Energy S-1/A</a></td></tr><tr><td>BlackRock</td><td>Meta JV（Hyperion・El Paso）</td><td class="kd">融資</td><td class="r">$3B</td><td>確定</td><td class="nt">Hyperion債の購入</td><td>C</td><td class="sr"><a href="https://www.globaldatacenterhub.com/p/blackrock-launches-123-billion-bond" target="_blank" rel="noopener">Global Data Center Hub：El Paso債</a></td></tr><tr><td>Blue Owl</td><td>Meta JV（Hyperion・El Paso）</td><td class="ke">出資</td><td class="r">$2.5B</td><td>確定</td><td class="nt">Hyperionの80%</td><td>B</td><td class="sr"><a href="https://www.itiger.com/hans/news/2582394141" target="_blank" rel="noopener">WSJ：Hyperion等の大型案件</a></td></tr><tr><td>AMD</td><td>Anthropic</td><td class="ke">出資</td><td class="r">$2.5B</td><td>IPO私募</td><td class="nt">IPO同時の私募で約$2.5B。最大$5Bとの関係は未確認</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>NVIDIA</td><td>CoreWeave</td><td class="ke">出資</td><td class="r">$2B</td><td>完了</td><td class="nt">2026年1月</td><td>B</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001769628/000176962826000366/crwv-20260630.htm" target="_blank" rel="noopener">CoreWeave Form 10-Q（2026/6/30）</a></td></tr><tr><td>NVIDIA</td><td>Nebius</td><td class="ke">出資</td><td class="r">$2B</td><td>完了</td><td class="nt">2026年3月</td><td>C</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001513845/000110465926084452/tm2620683d1_ex99-1.htm" target="_blank" rel="noopener">Nebius 6-K（担保付融資とMicrosoft・Meta契約）</a></td></tr><tr><td>Alphabet</td><td>Cipher</td><td class="kg">肩代わり</td><td class="r">$1.4B</td><td>確定</td><td class="nt">Fluidstackのリースを保証。ワラントで約5.4%取得</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1819989/000095010325012168/dp234624_ex9901.htm" target="_blank" rel="noopener">Cipher Mining 8-K：Google保証$1.4B</a></td></tr><tr><td>Microsoft</td><td>Anthropic</td><td class="ke">出資</td><td class="r">$1B</td><td>IPO私募</td><td class="nt">IPO同時の私募で約$1B。最大$5Bの出資発表との関係は未確認</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>Broadcom</td><td>Anthropic</td><td class="ke">出資</td><td class="r">$1B</td><td>IPO私募</td><td class="nt">IPO同時の私募で約$1B</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>Micron</td><td>Anthropic</td><td class="ke">出資</td><td class="r">$1B</td><td>IPO私募</td><td class="nt">IPO同時の私募で約$1B</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>TSMC</td><td>Anthropic</td><td class="ke">出資</td><td class="r">$0.5B</td><td>IPO私募</td><td class="nt">IPO同時の私募で約$0.5B</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr><tr><td>CoreWeave</td><td>OpenAI</td><td class="ke">出資</td><td class="r">$0.35B</td><td>確定</td><td class="nt">契約に伴う株式発行</td><td>C</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001769628/000176962826000366/crwv-20260630.htm" target="_blank" rel="noopener">CoreWeave Form 10-Q（2026/6/30）</a></td></tr><tr><td>AMD</td><td>Crusoe</td><td class="kg">肩代わり</td><td class="r">$0.3B</td><td>報道</td><td class="nt">Goldman融資を実質保証。顧客不在なら自らチップを借りる</td><td>B</td><td class="sr"><a href="https://sherwood.news/markets/amd-to-effectively-guarantee-a-loan-to-ai-startup-crusoe-that-will-be-used/" target="_blank" rel="noopener">Sherwood：AMDのCrusoe融資保証（The Information引用）</a></td></tr><tr><td>Goldman Sachs</td><td>Crusoe</td><td class="kd">融資</td><td class="r">$0.3B</td><td>報道</td><td class="nt">AMDが実質保証</td><td>B</td><td class="sr"><a href="https://sherwood.news/markets/amd-to-effectively-guarantee-a-loan-to-ai-startup-crusoe-that-will-be-used/" target="_blank" rel="noopener">Sherwood：AMDのCrusoe融資保証（The Information引用）</a></td></tr><tr><td>ING</td><td>Jupiter融資団（銀行名未確認）</td><td class="kd">融資</td><td class="r">$0.03B</td><td>売却中</td><td class="nt">$500Mの入札の一部</td><td>B</td><td class="sr"><a href="https://www.benzinga.com/markets/prediction-markets/26/11/62977060/musk-softbank-turbines" target="_blank" rel="noopener">Benzinga：ING融資売却とSBGのCDS（Bloomberg・Reuters引用）</a></td></tr><tr><td>OpenAI</td><td>Firmus</td><td class="kc">払う約束</td><td class="r">非開示</td><td>報道</td><td class="nt">マレーシアのアンカー顧客。金額非開示</td><td>B</td><td class="sr"><a href="https://phys.org/news/2026-10-paying-circular-money-machine-ai.html" target="_blank" rel="noopener">The Conversation（Phys.org）：Firmus</a></td></tr><tr><td>Meta</td><td>Nebius</td><td class="kc">払う約束</td><td class="r">非開示</td><td>確定</td><td class="nt">Nebiusの開示はMicrosoft・Metaなど投資適格顧客で$40B超</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001513845/000110465926084452/tm2620683d1_ex99-1.htm" target="_blank" rel="noopener">Nebius 6-K（担保付融資とMicrosoft・Meta契約）</a></td></tr><tr><td>Microsoft</td><td>CoreWeave</td><td class="kc">払う約束</td><td class="r">非開示</td><td>確定</td><td class="nt">主要顧客。金額非開示</td><td>C</td><td class="sr"><a href="https://www.stocktitan.net/articles/coreweave-nebius-ai-cloud-debt-when-it-comes-due" target="_blank" rel="noopener">StockTitan：CoreWeave 10-Qの債務と契約の引用</a></td></tr><tr><td>CoreWeave</td><td>NVIDIA</td><td class="kc">払う約束</td><td class="r">非開示</td><td>確定</td><td class="nt">GPU購入。2026年の設備投資$35〜39Bの多くが該当。金額非開示</td><td>B</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0001769628/000176962826000366/crwv-20260630.htm" target="_blank" rel="noopener">CoreWeave Form 10-Q（2026/6/30）</a></td></tr><tr><td>AIクラウド群（内訳非開示）</td><td>NVIDIA</td><td class="kc">払う約束</td><td class="r">非開示</td><td>確定</td><td class="nt">AIクラウドがNVIDIA製品を調達</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm" target="_blank" rel="noopener">NVIDIA Form 10-Q（2026/7/26）</a></td></tr><tr><td>Oracle</td><td>Vantage（Texas・Wisconsin）</td><td class="kc">払う約束</td><td class="r">非開示</td><td>確定</td><td class="nt">テナント。リース額は$288Bの内数</td><td>B</td><td class="sr"><a href="https://www.datacenterdynamics.com/en/news/oracle-set-to-receive-38bn-debt-package-for-data-center-projects-report/" target="_blank" rel="noopener">DCD：$38B融資の銀行団</a></td></tr><tr><td>Oracle</td><td>STACK（Project Jupiter）</td><td class="kc">払う約束</td><td class="r">非開示</td><td>確定</td><td class="nt">テナント。解約不可の契約と報道。9月に電力遅延で不可抗力を通知</td><td>B</td><td class="sr"><a href="https://www.axios.com/2026/09/24/oracle-force-majeure-blue-owl-openai" target="_blank" rel="noopener">Axios：Oracleの不可抗力通知</a></td></tr><tr><td>Oracle</td><td>Abilene（Crusoe・Blue Owl）</td><td class="kc">払う約束</td><td class="r">非開示</td><td>確定</td><td class="nt">テナント。リース額は$288Bの内数</td><td>C</td><td class="sr"><a href="https://capexcat.substack.com/p/the-first-crack-in-the-ai-money-chain" target="_blank" rel="noopener">Capex Cat：Oracle建設融資（FT・Bloomberg引用）</a></td></tr><tr><td>ソフトバンクG</td><td>SB Energy</td><td class="ke">出資</td><td class="r">非開示</td><td>確定</td><td class="nt">親会社</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/2133037/000162828026062846/sbenergy-sx1a2.htm" target="_blank" rel="noopener">SB Energy S-1/A</a></td></tr><tr><td>Alphabet</td><td>TeraWulf</td><td class="ke">出資</td><td class="r">非開示</td><td>確定</td><td class="nt">ワラント約14%</td><td>A</td><td class="sr"><a href="https://investors.terawulf.com/news-events/press-releases/detail/114/terawulf-announces-fluidstack-expansion-with-160-mw-cb-5-lease-at-lake-mariner" target="_blank" rel="noopener">TeraWulf：Google保証$3.2B</a></td></tr><tr><td>Alphabet</td><td>Cipher</td><td class="ke">出資</td><td class="r">非開示</td><td>確定</td><td class="nt">ワラント約5.4%</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/1819989/000095010325012168/dp234624_ex9901.htm" target="_blank" rel="noopener">Cipher Mining 8-K：Google保証$1.4B</a></td></tr><tr><td>BlackRock</td><td>Meta JV（Hyperion・El Paso）</td><td class="ke">出資</td><td class="r">非開示</td><td>確定</td><td class="nt">El Pasoの80%（GIP・HPS）</td><td>C</td><td class="sr"><a href="https://www.globaldatacenterhub.com/p/blackrock-launches-123-billion-bond" target="_blank" rel="noopener">Global Data Center Hub：El Paso債</a></td></tr><tr><td>Blue Owl</td><td>STACK（Project Jupiter）</td><td class="ke">出資</td><td class="r">非開示</td><td>確定</td><td class="nt">STACKの親会社</td><td>B</td><td class="sr"><a href="https://www.axios.com/2026/09/24/oracle-force-majeure-blue-owl-openai" target="_blank" rel="noopener">Axios：Oracleの不可抗力通知</a></td></tr><tr><td>Blue Owl</td><td>Abilene（Crusoe・Blue Owl）</td><td class="ke">出資</td><td class="r">非開示</td><td>確定</td><td class="nt">合弁</td><td>C</td><td class="sr"><a href="https://capexcat.substack.com/p/the-first-crack-in-the-ai-money-chain" target="_blank" rel="noopener">Capex Cat：Oracle建設融資（FT・Bloomberg引用）</a></td></tr><tr><td>NVIDIA</td><td>Valor VCI（GPUリース）</td><td class="ke">出資</td><td class="r">非開示</td><td>確定</td><td class="nt">アンカーLP</td><td>C</td><td class="sr"><a href="https://www.ssga.com/library-content/products/fund-docs/etfs/us/ps/doc-vci-asset-holdings-prsd.pdf" target="_blank" rel="noopener">State Street：VCI資産の説明資料</a></td></tr><tr><td>JPMorgan</td><td>SBGブリッジ団</td><td class="kd">融資</td><td class="r">非開示</td><td>参加</td><td class="nt">割当非開示</td><td>C</td><td class="sr"><a href="https://www.nikkei.com/article/DGXZQOUB098P50Z00C26A9000000/" target="_blank" rel="noopener">日経：SBGブリッジローン返済</a></td></tr><tr><td>Goldman Sachs</td><td>SBGブリッジ団</td><td class="kd">融資</td><td class="r">非開示</td><td>参加</td><td class="nt">割当非開示</td><td>A</td><td class="sr"><a href="https://www.nikkei.com/article/DGXZQOUB098P50Z00C26A9000000/" target="_blank" rel="noopener">日経：SBGブリッジローン返済</a></td></tr><tr><td>みずほ</td><td>SBGブリッジ団</td><td class="kd">融資</td><td class="r">非開示</td><td>参加</td><td class="nt">割当非開示</td><td>A</td><td class="sr"><a href="https://www.nikkei.com/article/DGXZQOUB098P50Z00C26A9000000/" target="_blank" rel="noopener">日経：SBGブリッジローン返済</a></td></tr><tr><td>三井住友</td><td>SBGブリッジ団</td><td class="kd">融資</td><td class="r">非開示</td><td>参加</td><td class="nt">割当非開示</td><td>A</td><td class="sr"><a href="https://www.nikkei.com/article/DGXZQOUB098P50Z00C26A9000000/" target="_blank" rel="noopener">日経：SBGブリッジローン返済</a></td></tr><tr><td>三菱UFJ</td><td>SBGブリッジ団</td><td class="kd">融資</td><td class="r">非開示</td><td>参加</td><td class="nt">割当非開示</td><td>A</td><td class="sr"><a href="https://www.nikkei.com/article/DGXZQOUB098P50Z00C26A9000000/" target="_blank" rel="noopener">日経：SBGブリッジローン返済</a></td></tr><tr><td>JPMorgan</td><td>Vantage融資団</td><td class="kd">融資</td><td class="r">非開示</td><td>主幹事</td><td class="nt">割当非開示</td><td>B</td><td class="sr"><a href="https://www.datacenterdynamics.com/en/news/oracle-set-to-receive-38bn-debt-package-for-data-center-projects-report/" target="_blank" rel="noopener">DCD：$38B融資の銀行団</a></td></tr><tr><td>三菱UFJ</td><td>Vantage融資団</td><td class="kd">融資</td><td class="r">非開示</td><td>主幹事</td><td class="nt">割当非開示</td><td>B</td><td class="sr"><a href="https://www.datacenterdynamics.com/en/news/oracle-set-to-receive-38bn-debt-package-for-data-center-projects-report/" target="_blank" rel="noopener">DCD：$38B融資の銀行団</a></td></tr><tr><td>Wells Fargo</td><td>Vantage融資団</td><td class="kd">融資</td><td class="r">非開示</td><td>参加</td><td class="nt">割当非開示</td><td>B</td><td class="sr"><a href="https://www.datacenterdynamics.com/en/news/oracle-set-to-receive-38bn-debt-package-for-data-center-projects-report/" target="_blank" rel="noopener">DCD：$38B融資の銀行団</a></td></tr><tr><td>BNP Paribas</td><td>Vantage融資団</td><td class="kd">融資</td><td class="r">非開示</td><td>参加</td><td class="nt">割当非開示</td><td>B</td><td class="sr"><a href="https://www.datacenterdynamics.com/en/news/oracle-set-to-receive-38bn-debt-package-for-data-center-projects-report/" target="_blank" rel="noopener">DCD：$38B融資の銀行団</a></td></tr><tr><td>Goldman Sachs</td><td>Vantage融資団</td><td class="kd">融資</td><td class="r">非開示</td><td>参加</td><td class="nt">割当非開示</td><td>B</td><td class="sr"><a href="https://www.datacenterdynamics.com/en/news/oracle-set-to-receive-38bn-debt-package-for-data-center-projects-report/" target="_blank" rel="noopener">DCD：$38B融資の銀行団</a></td></tr><tr><td>三井住友</td><td>Vantage融資団</td><td class="kd">融資</td><td class="r">非開示</td><td>参加</td><td class="nt">割当非開示</td><td>B</td><td class="sr"><a href="https://www.datacenterdynamics.com/en/news/oracle-set-to-receive-38bn-debt-package-for-data-center-projects-report/" target="_blank" rel="noopener">DCD：$38B融資の銀行団</a></td></tr><tr><td>Société Générale</td><td>Vantage融資団</td><td class="kd">融資</td><td class="r">非開示</td><td>参加</td><td class="nt">割当非開示</td><td>B</td><td class="sr"><a href="https://www.datacenterdynamics.com/en/news/oracle-set-to-receive-38bn-debt-package-for-data-center-projects-report/" target="_blank" rel="noopener">DCD：$38B融資の銀行団</a></td></tr><tr><td>Morgan Stanley</td><td>Meta JV（Hyperion・El Paso）</td><td class="kd">融資</td><td class="r">非開示</td><td>主幹事</td><td class="nt">Hyperionの単独幹事</td><td>B</td><td class="sr"><a href="https://www.itiger.com/hans/news/2582394141" target="_blank" rel="noopener">WSJ：Hyperion等の大型案件</a></td></tr><tr><td>JPMorgan</td><td>Meta JV（Hyperion・El Paso）</td><td class="kd">融資</td><td class="r">非開示</td><td>主幹事</td><td class="nt">El Paso債</td><td>C</td><td class="sr"><a href="https://www.globaldatacenterhub.com/p/blackrock-launches-123-billion-bond" target="_blank" rel="noopener">Global Data Center Hub：El Paso債</a></td></tr><tr><td>Blackstone</td><td>AI XPV（TPUリースSPV）</td><td class="kd">融資</td><td class="r">非開示</td><td>共同</td><td class="nt">割当非開示</td><td>B</td><td class="sr"><a href="https://www.ifre.com/loans/2496132/chips-with-everything-broadcom-backstops-us42bn-funding-for-anthropic" target="_blank" rel="noopener">IFR：Broadcomの保証付き融資</a></td></tr><tr><td>三菱UFJ</td><td>CoreWeave</td><td class="kd">融資</td><td class="r">非開示</td><td>幹事</td><td class="nt">DDTL 4.0</td><td>B</td><td class="sr"><a href="https://www.stocktitan.net/articles/coreweave-nebius-ai-cloud-debt-when-it-comes-due" target="_blank" rel="noopener">StockTitan：CoreWeave 10-Qの債務と契約の引用</a></td></tr><tr><td>Morgan Stanley</td><td>CoreWeave</td><td class="kd">融資</td><td class="r">非開示</td><td>幹事</td><td class="nt">DDTL 4.0</td><td>B</td><td class="sr"><a href="https://www.stocktitan.net/articles/coreweave-nebius-ai-cloud-debt-when-it-comes-due" target="_blank" rel="noopener">StockTitan：CoreWeave 10-Qの債務と契約の引用</a></td></tr><tr><td>Goldman Sachs</td><td>Volta</td><td class="kd">融資</td><td class="r">非開示</td><td>共同</td><td class="nt">割当非開示</td><td>B</td><td class="sr"><a href="https://finance.yahoo.com/technology/ai/articles/wall-street-ai-debt-machine-103000166.html" target="_blank" rel="noopener">Bloomberg（Yahoo配信）：AI債務の供給過多</a></td></tr><tr><td>Anthropic</td><td>CoreWeave</td><td class="kc">払う約束</td><td class="r">非開示</td><td>契約あり</td><td class="nt">2026年4月に複数年契約を発表。金額・期間は非開示。AnthropicのS-1/Aに社名なし</td><td>A</td><td class="sr"><a href="https://www.coreweave.com/news/coreweave-announces-multi-year-agreement-with-anthropic" target="_blank" rel="noopener">CoreWeave：Anthropicとの複数年契約（2026/4/10）</a></td></tr><tr><td>Anthropic</td><td>Fluidstack</td><td class="kc">払う約束</td><td class="r">非開示</td><td>確定</td><td class="nt">Fluidstack USA Iとのコロケーション・運営契約。金額非開示</td><td>A</td><td class="sr"><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></td></tr></tbody></table></div>
+</section>
+
+<section class="sec">
+  <header><h2>出典</h2></header>
+  <ul class="src"><li><a href="https://www.sec.gov/Archives/edgar/data/2133037/000162828026062846/sbenergy-sx1a2.htm" target="_blank" rel="noopener">SB Energy S-1/A</a></li><li><a href="https://tomtunguz.com/openai-hardware-spending-2025-2035/" target="_blank" rel="noopener">Tomasz Tunguz：OpenAIのベンダー別推計</a></li><li><a href="https://convexityos.com/blog/openai-revenue-gap-2026" target="_blank" rel="noopener">Convexity：OpenAIの開示契約額（各社提出書類を引用）</a></li><li><a href="https://www.stocktitan.net/articles/coreweave-nebius-ai-cloud-debt-when-it-comes-due" target="_blank" rel="noopener">StockTitan：CoreWeave 10-Qの債務と契約の引用</a></li><li><a href="https://phys.org/news/2026-10-paying-circular-money-machine-ai.html" target="_blank" rel="noopener">The Conversation（Phys.org）：Firmus</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0002130357/000162828026074338/anthropicpbc-sx1ax3.htm" target="_blank" rel="noopener">Anthropic Form S-1/A 第3次訂正（2026/11/17）</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0001513845/000110465926084452/tm2620683d1_ex99-1.htm" target="_blank" rel="noopener">Nebius 6-K（担保付融資とMicrosoft・Meta契約）</a></li><li><a href="https://acquinox.capital/insights/compute-energy/neocloud-financing-balance-sheet-test" target="_blank" rel="noopener">Acquinox：ネオクラウドの契約額</a></li><li><a href="https://financefeeds.com/nebius-stock-120-37-microsoft-neocloud-oversight/" target="_blank" rel="noopener">FinanceFeeds：NebiusのMicrosoft契約</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm" target="_blank" rel="noopener">NVIDIA Form 10-Q（2026/7/26）</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0001769628/000176962826000366/crwv-20260630.htm" target="_blank" rel="noopener">CoreWeave Form 10-Q（2026/6/30）</a></li><li><a href="https://www.ifre.com/loans/2496132/chips-with-everything-broadcom-backstops-us42bn-funding-for-anthropic" target="_blank" rel="noopener">IFR：Broadcomの保証付き融資</a></li><li><a href="https://www.ssga.com/library-content/products/fund-docs/etfs/us/ps/doc-vci-asset-holdings-prsd.pdf" target="_blank" rel="noopener">State Street：VCI資産の説明資料</a></li><li><a href="https://investors.terawulf.com/news-events/press-releases/detail/114/terawulf-announces-fluidstack-expansion-with-160-mw-cb-5-lease-at-lake-mariner" target="_blank" rel="noopener">TeraWulf：Google保証$3.2B</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/1819989/000095010325012168/dp234624_ex9901.htm" target="_blank" rel="noopener">Cipher Mining 8-K：Google保証$1.4B</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/1341439/000119312526389274/orcl-20260831.htm" target="_blank" rel="noopener">Oracle Form 10-Q（2026/8/31）</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0000789019/000119312526436133/msft-20260930.htm" target="_blank" rel="noopener">Microsoft Form 10-Q（2026/9/30）</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0001326801/000162828026066773/meta-20260930.htm" target="_blank" rel="noopener">Meta Form 10-Q（2026/9/30）</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0001018724/000101872426000040/amzn-20260930.htm" target="_blank" rel="noopener">Amazon Form 10-Q（2026/9/30）</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0001652044/000165204426000084/goog-20260930.htm" target="_blank" rel="noopener">Alphabet Form 10-Q（2026/9/30）</a></li><li><a href="https://www.datacenterdynamics.com/en/news/oracle-set-to-receive-38bn-debt-package-for-data-center-projects-report/" target="_blank" rel="noopener">DCD：$38B融資の銀行団</a></li><li><a href="https://www.axios.com/2026/09/24/oracle-force-majeure-blue-owl-openai" target="_blank" rel="noopener">Axios：Oracleの不可抗力通知</a></li><li><a href="https://capexcat.substack.com/p/the-first-crack-in-the-ai-money-chain" target="_blank" rel="noopener">Capex Cat：Oracle建設融資（FT・Bloomberg引用）</a></li><li><a href="https://fourweekmba.com/ai-meta-got-back-59-of-what-it-put-into-hyperion-in-cash/" target="_blank" rel="noopener">Meta 10-Qの合弁保証の引用（FourWeekMBA）</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0001730168/000173016826000080/avgo-20260802.htm" target="_blank" rel="noopener">Broadcom Form 10-Q（2026/8/2）</a></li><li><a href="https://finance.yahoo.com/markets/stocks/articles/broadcom-ceo-says-capital-available-020300353.html" target="_blank" rel="noopener">Yahoo Finance：Broadcom $43.5B保証（Reuters・WSJ引用）</a></li><li><a href="https://sherwood.news/markets/amd-to-effectively-guarantee-a-loan-to-ai-startup-crusoe-that-will-be-used/" target="_blank" rel="noopener">Sherwood：AMDのCrusoe融資保証（The Information引用）</a></li><li><a href="https://group.softbank/news/press/20261001" target="_blank" rel="noopener">ソフトバンクG：OpenAI追加出資の完了（2026/10/1）</a></li><li><a href="https://www.ifre.com/bonds/2476015/nvidia-defends-circular-finance-deals-as-commitments-surpass-us530bn" target="_blank" rel="noopener">IFR：NVIDIAの約束と保証</a></li><li><a href="https://fourweekmba.com/ai-amds-openai-and-meta-warrants-rose-12-5x-to-178-58-a-share/" target="_blank" rel="noopener">AMD 10-Qのワラント評価の引用（FourWeekMBA）</a></li><li><a href="https://www.9fin.com/insights/anthropic-s-1-revenue-gains-looming-infrastructure-bill" target="_blank" rel="noopener">9fin：Anthropic S-1の分析</a></li><li><a href="https://www.cnbc.com/2026/07/22/amd-anthropic-ai-chip-investment.html" target="_blank" rel="noopener">CNBC：AMDのAnthropic出資</a></li><li><a href="https://www.itiger.com/hans/news/2582394141" target="_blank" rel="noopener">WSJ：Hyperion等の大型案件</a></li><li><a href="https://www.globaldatacenterhub.com/p/blackrock-launches-123-billion-bond" target="_blank" rel="noopener">Global Data Center Hub：El Paso債</a></li><li><a href="https://www.cnbc.com/2026/10/01/broadcom-lending-anthropic-42-billion-chips-reuters.html" target="_blank" rel="noopener">CNBC：Broadcomの$42B融資</a></li><li><a href="https://www.nikkei.com/article/DGXZQOUB098P50Z00C26A9000000/" target="_blank" rel="noopener">日経：SBGブリッジローン返済</a></li><li><a href="https://www.benzinga.com/markets/prediction-markets/26/11/62977060/musk-softbank-turbines" target="_blank" rel="noopener">Benzinga：ING融資売却とSBGのCDS（Bloomberg・Reuters引用）</a></li><li><a href="https://investinglive.com/stocks/spacex-seeks-40-billion-in-debt-led-by-apollo-to-fund-nvidia-chip-order-ft-says/" target="_blank" rel="noopener">investingLive：SpaceX $40B（FT引用）</a></li><li><a href="https://finance.yahoo.com/technology/ai/articles/wall-street-ai-debt-machine-103000166.html" target="_blank" rel="noopener">Bloomberg（Yahoo配信）：AI債務の供給過多</a></li><li><a href="https://www.globaldatacenterhub.com/p/navers-9b-gpu-spv-googles-17b-wyoming" target="_blank" rel="noopener">Global Data Center Hub：Naver案件</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0001769628/000176962826000465/crwv-20260930.htm" target="_blank" rel="noopener">CoreWeave Form 10-Q（2026/9/30）</a></li><li><a href="https://www.hl.co.uk/shares/share-research/spacex-q3-results-ai-powers-a-big-beat" target="_blank" rel="noopener">Hargreaves Lansdown：SpaceX Q3</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/1513845/000110465926126008/tm2629571d1_ex99-1.htm" target="_blank" rel="noopener">Nebius 6-K 2026年Q3決算</a></li><li><a href="https://weissratings.com/en/weiss-ratings-daily/which-neocloud-stock-is-most-at-risk-coreweave-applied-digital-nebius-iren-and-hut-8-ranked" target="_blank" rel="noopener">Weiss Ratings：Nebius・IRENの債務</a></li><li><a href="https://www.coreweave.com/news/coreweave-announces-multi-year-agreement-with-anthropic" target="_blank" rel="noopener">CoreWeave：Anthropicとの複数年契約（2026/4/10）</a></li><li><a href="https://247wallst.com/investing/2026/09/14/rumble-soars-10-on-report-anthropic-is-the-13-7b-compute-customer-coreweave-and-nebius-drop-9/" target="_blank" rel="noopener">24/7 Wall St.：Rumbleの$13.7B契約の相手はAnthropicとの報道</a></li><li><a href="https://assets.nebius.com/assets/5bc733ff-bed7-415c-af10-74ce7881a764/Nebius-SHL-2026-Q3.pdf" target="_blank" rel="noopener">Nebius 株主への手紙 2026年Q3</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0000789019/000119312526436122/msft-ex99_1.htm" target="_blank" rel="noopener">Microsoft 決算リリース FY27 Q1</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0001730168/000173016826000076/avgo-08022026x8kxex99.htm" target="_blank" rel="noopener">Broadcom 決算リリース FY26 Q3</a></li><li><a href="https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000188/0000002488-26-000188.pdf" target="_blank" rel="noopener">AMD 決算資料 2026年Q3</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0001018724/000101872426000038/amzn-20260930xex991.htm" target="_blank" rel="noopener">Amazon 決算リリース 2026年Q3</a></li><li><a href="https://www.sec.gov/Archives/edgar/data/0001326801/000162828026066700/meta-09302026xexhibit991.htm" target="_blank" rel="noopener">Meta 決算リリース 2026年Q3</a></li><li><a href="https://group.softbank/news/ir/20260806_1" target="_blank" rel="noopener">ソフトバンクG：NAV情報（2026/6末）</a></li><li><a href="https://augment.market/pulse/openai-reportedly-0-debt-665b-in-commitments" target="_blank" rel="noopener">Augment：OpenAI $665B（The Information報道の引用）</a></li><li><a href="https://www.fool.com/earnings/call-transcripts/2026/11/10/coreweave-crwv-q3-2026-earnings-call-transcript/" target="_blank" rel="noopener">CoreWeave 2026年Q3決算説明会の書き起こし（Motley Fool）</a></li><li><a href="https://www.trefis.com/stock/crwv/articles/624611/coreweave-stock-jumps-25-does-the-anthropic-ipo-help/2026-11-12" target="_blank" rel="noopener">Trefis：AnthropicのS-1にCoreWeaveの社名なし</a></li><li><a href="https://asiatimes.com/2026/11/anthropic-ipo-the-age-of-miracles-priced-at-78-a-share/" target="_blank" rel="noopener">Asia Times：AnthropicのIPO条件と私募</a></li><li><a href="https://www.securities.io/imf-global-financial-stability-report-flags-ai-yield-and-cyber-risks/" target="_blank" rel="noopener">Securities.io：IMF記者会見の要旨</a></li><li><a href="https://the-decoder.com/sp-global-sees-openai-as-a-key-credit-risk-for-oracle-and-cuts-its-credit-rating/" target="_blank" rel="noopener">The Decoder：S&amp;PのOracle格下げ</a></li><li><a href="https://www.cnbc.com/2026/10/15/coreweave-credit-default-swaps-hit-distress-levels-as-investors-sour-on-ai-debt.html" target="_blank" rel="noopener">CNBC：CoreWeaveのCDS</a></li></ul>
+</section>
+</div>
+
+</body></html>
